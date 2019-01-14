@@ -3,7 +3,6 @@
 # Edit at https://www.gitignore.io/?templates=composer,phpstorm+all
 
 ### Composer ###
->>>>>>> First commit
 composer.phar
 /vendor/
 
