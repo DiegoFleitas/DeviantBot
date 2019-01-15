@@ -60,184 +60,20 @@
 
 $url_web = 'https://www.deviantart.com/newest';
 
-/**
- * @param array $tags
- * @param array $keywords
- * @param int $newest
- * @return bool|string
- */
-function buildRSSURL($tags = [], $keywords = [], $newest = 0){
-    $url_rss = 'http://backend.deviantart.com/rss.xml?&q=';
+include_once('DeviantImage.php');
 
-    if(empty($tags) && empty($keywords)){
-        echo 'buildRSSURL empty url';
-        return false;
-    }
+$ALL_IMAGES = [];
 
-    $params = '';
-    foreach($keywords as $keyword){
-        $params .= $keyword.' ';
-    }
+// default tags
+$tags = array(
+    'berserk',
+    'oc'
+);
 
-    foreach($tags as $tag){
-        $params .= 'tag:'.$tag.' ';
-    }
-
-    if($newest){
-        $params .= 'sort:time ';
-    }
-
-    $url_rss .= rawurlencode($params).'&=';
-
-    return $url_rss;
+$ImgFetch = new ImageFetcher();
+$links = $ImgFetch->getImagelinksFromRSS($tags);
+foreach($links as $link){
+    $ALL_IMAGES[$link] = $ImgFetch->getImageData($link);
 }
 
-/**
- * @desc GET request to DeviantArt servers
- * @param $url
- * @param string $type
- * @return bool|string
- */
-function getRawDeviantArtData($url, $media = 'JSON'){
-
-    $curl = curl_init();
-
-    //    Internet Explorer 6 on Windows XP SP2
-    $agent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)';
-
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_ENCODING, "");
-    curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-    curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
-    curl_setopt($curl, CURLOPT_POSTFIELDS, "");
-    curl_setopt($curl, CURLOPT_USERAGENT, $agent);
-    curl_setopt($curl, CURLOPT_HTTPHEADER,  array(
-        "Postman-Token: 8fb92482-5540-4a75-ad8e-0825f73074b8",
-        "cache-control: no-cache"
-    ));
-
-    $response = curl_exec($curl);
-    $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    $err = curl_error($curl);
-
-    curl_close($curl);
-
-    if ($err) {
-        echo $media." cURL Error #:" . $err;
-        return false;
-    } else {
-        if($httpcode != '200'){
-            echo $media." Http code error #:" . $httpcode;
-            return false;
-        }
-        return $response;
-    }
-}
-
-function pickTerribleImage($json_data){
-
-    $isTerribleImage = $isExtraTerribleImage = false;
-
-    // No zucc pls
-    if($json_data->safety !== 'nonadult'){
-        return false;
-    }
-
-    $terrible_users = array(
-        'plumpchu',
-        'fattypreggo',
-        'skeletonnekogems12'
-    );
-
-    $isTerribleAuthor = in_array($json_data->author_name, $terrible_users);
-
-    if(isset($json_data->tags)){
-
-        $extra_terrible_tags = array(
-            '#oc',
-            '#dab',
-            '#fatoc',
-            '#webcomicoc',
-            '#undertaleoc',
-            '#sonicoc',
-            '#sonicfancharacter',
-            '#fan_character',
-            '#ocxcanon',
-            '#sansxoc',
-            '#musclegirl',
-            '#tickled',
-            '#infalted'
-        );
-        $terrible_tags = array(
-
-            '#ocxcanonshipping',
-
-            '#barefeet',
-            '#feet',
-            '#foot',
-            '#longlegs',
-            '#sexy',
-            '#cutekawaii',
-            '#footfetish',
-            '#tickles',
-            '#tickling',
-
-            '#bbw',
-            '#belly',
-            '#cake',
-            '#chubby',
-            '#chubbygirl',
-            '#chubbyobese',
-            '#curvy',
-            '#expansion',
-            '#fat',
-            '#fatass',
-            '#fatgirl',
-            '#fatlegs',
-            '#feed',
-            '#feedee',
-            '#feeder',
-            '#feeding',
-            '#forcefeeding',
-            '#gainer',
-            '#jiggle',
-            '#lard',
-            '#lardass',
-            '#morbidlyobese',
-            '#obese',
-            '#obesity',
-            '#plump',
-            '#ssbbw',
-            '#stuffer',
-            '#stuffing',
-            '#thighs',
-            '#tubby',
-            '#weightgain',
-            '#wg',
-            '#plumpgirl',
-            '#fatsexy',
-            '#stuffedbelly',
-            '#thickthighs',
-            '#thickwomen',
-            '#chubbybelly',
-            '#weightgainfat',
-            '#fatbellygirl',
-            '#fatcosplay',
-            '#thick',
-            '#fatbelliedwoman',
-        );
-
-        $image_tags = explode(',', $json_data->tags);
-        $isTerribleImage = array_intersect($image_tags, $terrible_tags);
-        $isExtraTerribleImage = array_intersect($image_tags, $extra_terrible_tags);
-    }
-
-    if($isTerribleAuthor || !empty($isTerribleImage) || !empty($isExtraTerribleImage)){
-        return true;
-    }
-    return false;
-
-}
+print_r($ALL_IMAGES);

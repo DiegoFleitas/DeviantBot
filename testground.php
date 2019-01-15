@@ -49,7 +49,7 @@ function TEST_getRSSData(){
  */
 function TEST_parseXMLResponse($response = NULL){
     if($response == NULL){
-        $response = file_get_contents('test-response.xml');
+        $response = file_get_contents('test/test-response.xml');
     }
     $xml = new SimpleXMLElement($response);
     $links_array = array();
@@ -84,7 +84,7 @@ function TEST_getJsonData($link = NULL){
  */
 function TEST_parseJsonData($response = NULL){
     if($response == NULL){
-        $response = file_get_contents('test-response.json');
+        $response = file_get_contents('test/test-response.json');
     }
     if($response){
         return json_decode($response);
