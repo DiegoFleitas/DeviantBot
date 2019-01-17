@@ -6,6 +6,11 @@
  * Time: 9:45 PM
  */
 
+require_once 'DeviantImage.php';
+require_once 'ImageTransformer.php';
+
+use Intervention\Image\ImageManagerStatic as Image;
+
 class ImageFetcher
 {
 
@@ -15,12 +20,16 @@ class ImageFetcher
      * @param int $newest
      * @return bool|string
      */
-    function buildRSSURL($tags = [], $keywords = [], $newest = 0){
+    function buildRSSURL($tags = [], $keywords = [], $newest = 0, $dailydeviations = 0){
         $url_rss = 'http://backend.deviantart.com/rss.xml?&q=';
 
-        if(empty($tags) && empty($keywords)){
+        if(empty($tags) && empty($keywords) && !$dailydeviations){
             echo 'buildRSSURL empty url';
             return false;
+        }
+
+        if($dailydeviations){
+            $url_rss .= 'special:dd';
         }
 
         $params = '';
@@ -96,9 +105,20 @@ class ImageFetcher
         }
     }
 
-    function getImagelinksFromRSS($tags){
+    /**
+     * @param $tags
+     * @param int $type 1 for newest (tagged keyword) 2 for daily deviations (tagged keyword)
+     * @return bool|mixed
+     */
+    function getImagelinksFromRSS($tags, $keywords, $type = 1){
 
-        $CURLOPT_URL = $this->buildRSSURL( $tags, [], 1  );
+        // Newest tagged
+        if($type == 1){
+            $CURLOPT_URL = $this->buildRSSURL( $tags, $keywords, 1  );
+        } elseif($type == 2){
+            // DailyDeviations
+            $CURLOPT_URL = $this->buildRSSURL( $tags, $keywords, 0, 1  );
+        }
 
         if($CURLOPT_URL){
             $response = $this->getRawDeviantArtData($CURLOPT_URL, 'RSS');
@@ -135,5 +155,99 @@ class ImageFetcher
         return $links_array;
     }
 
+
+    function randomDaily(){
+        $tags = array();
+        $keywords = array();
+
+        $all_links = array();
+
+        $ImgFetch = new ImageFetcher();
+        $links = $ImgFetch->getImagelinksFromRSS($tags, $keywords, 2);
+        foreach($links as $link){
+            array_push($all_links, $link);
+        }
+
+        $random_index = mt_rand(0, count($links) - 1);
+        return $all_links[$random_index];
+    }
+
+    function saveImageLocally($url, $path){
+
+        $curl = curl_init($url);
+        $fp = fopen($path, 'wb');
+
+        curl_setopt($curl, CURLOPT_FILE, $fp);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        $agent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)';
+        curl_setopt($curl, CURLOPT_USERAGENT, $agent);
+
+        $response = curl_exec($curl);
+        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+        fclose($fp);
+
+        if ($err) {
+            echo "SaveImage cURL Error #:" . $err;
+            return false;
+        } else {
+            if($httpcode != '200'){
+                echo "SaveImage Http code error #:" . $httpcode;
+                return false;
+            }
+            return $response;
+        }
+
+    }
+
+    function directURL($DeviantImage){
+
+        /** @var $DeviantImage DeviantImage */
+        $h = $DeviantImage->getHeight();
+        $w = $DeviantImage->getWidth();
+        $url = $DeviantImage->getThumbnailUrl();
+
+        $aux1 = 'fill/w_'. $w . ',h_'. $h;
+        $url = str_replace('fit/w_300,h_900', $aux1, $url);
+        $url = str_replace('300w', 'fullview', $url);
+
+        return $url;
+
+    }
+
+    /**
+     * @desc FETCH SAVE TRANSFORM Daily Image
+     */
+    function FSTDailyImage($path_to_save){
+
+        $ImgFetcher = new ImageFetcher();
+        $url = $ImgFetcher->randomDaily();
+
+        try{
+
+            $data = $ImgFetcher->getImageData($url);
+
+            $true_url = $ImgFetcher->directURL($data);
+
+            $image_path = 'test/new_image.jpg';
+
+            $ImgFetcher->saveImageLocally($true_url, $image_path);
+
+            // configure with favored image driver (gd by default)
+            Image::configure(array('driver' => 'imagick'));
+
+            $img = Image::make($image_path);
+
+            $ImgTrans = new ImageTransformer();
+            $ImgTrans->TransformRandomly($img, $path_to_save, $data->getSafety());
+
+        } catch (Exception $e){
+            echo $e->getMessage();
+        }
+
+    }
 
 }

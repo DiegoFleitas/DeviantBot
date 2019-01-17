@@ -69,9 +69,10 @@ $tags = array(
     'berserk',
     'oc'
 );
+$keywords = array();
 
 $ImgFetch = new ImageFetcher();
-$links = $ImgFetch->getImagelinksFromRSS($tags);
+$links = $ImgFetch->getImagelinksFromRSS($tags, $keywords, 1);
 foreach($links as $link){
     $ALL_IMAGES[$link] = $ImgFetch->getImageData($link);
 }

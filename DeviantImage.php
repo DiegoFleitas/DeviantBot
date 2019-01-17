@@ -47,21 +47,14 @@ class DeviantImage
         $this->safety = $data->safety;
         $this->pubdate = $data->pubdate;
         $this->community = $data->community;
-        $this->product = $data->product;
-        $this->tags = $data->tags;
-        $this->copyright = $data->copyright;
+        if(isset($data->product)) $this->product = $data->product;
+        if(isset($data->tags)) $this->tags = $data->tags;
+        if(isset($data->copyright)) $this->copyright = $data->copyright;
         $this->width = $data->width;
         $this->height = $data->height;
-        $this->imagetype = $data->imagetype;
-        $this->thumbnail_url = $data->thumbnail_url;
-        $this->thumbnail_width = $data->thumbnail_width;
-        $this->thumbnail_height = $data->thumbnail_height;
-        $this->thumbnail_url_150 = $data->thumbnail_url_150;
-        $this->thumbnail_url_200h = $data->thumbnail_url_200h;
-        $this->thumbnail_width_200h = $data->thumbnail_width_200h;
-        $this->thumbnail_height_200h = $data->thumbnail_height_200h;
+        if(isset($data->imagetype)) $this->imagetype = $data->imagetype;
+        if(isset($data->thumbnail_url)) $this->thumbnail_url = $data->thumbnail_url;
     }
-
 
     /**
      * @return mixed

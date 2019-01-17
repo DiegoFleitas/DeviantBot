@@ -9,6 +9,11 @@
 require_once __DIR__ . '/vendor/autoload.php';
 require_once 'secrets.php';
 
+use Intervention\Image\ImageManagerStatic as Image;
+
+require_once 'ImageTransformer.php';
+require_once 'ImageFetcher.php';
+
 # v5 with default access token fallback
 $fb = new Facebook\Facebook([
     'app_id' => $_APP_ID,
@@ -19,14 +24,15 @@ $fb = new Facebook\Facebook([
 try {
     $fb->setDefaultAccessToken($_ACCESS_TOKEN);
 
+    // Remote image
+//    $IMAGE_PATH = 'https://i0.wp.com/www.ensenadanoticias.com/wp-content/uploads/2018/11/test.png?resize=800%2C445';
+    // Local image
+//    $IMAGE_PATH = 'test/new_image.jpg';
 
-
-    $image = 'https://i0.wp.com/www.ensenadanoticias.com/wp-content/uploads/2018/11/test.png?resize=800%2C445';
-
-    # v5 photo upload example
+    # fileToUpload works with remote and local images
     $data = [
-        'source' => $fb->fileToUpload($image),
-        'message' => 'My file!',
+        'source' => $fb->fileToUpload($IMAGE_PATH),
+        'message' => 'No idea what I\'m doing',
     ];
 
     $response = $fb->post('/me/photos', $data);
@@ -34,4 +40,3 @@ try {
     echo "Error: " . $e->getMessage() . "\n\n";
     exit;
 }
-
