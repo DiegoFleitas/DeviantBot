@@ -13,6 +13,11 @@ require_once 'ImageFetcher.php';
 $IMAGE_PATH = 'test/transformed_image.jpg';
 
 $ImgFetcher = new ImageFetcher();
-$ImgFetcher->FSTDailyImage($IMAGE_PATH);
+$result = $ImgFetcher->FSTDailyImage($IMAGE_PATH);
+
+if($result){
+    $IMAGE_LINK = $result['link'];
+    $IMAGE_AUTHOR = $result['author'];
+}
 
 include_once ('upload-photo.php');

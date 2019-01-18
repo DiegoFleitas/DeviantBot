@@ -32,7 +32,11 @@ try {
     # fileToUpload works with remote and local images
     $data = [
         'source' => $fb->fileToUpload($IMAGE_PATH),
-        'message' => 'No idea what I\'m doing',
+        'message' => 'Beep Boop I found this, but I think it got corrupted along the way.
+        
+        Original image: 
+        '.$IMAGE_LINK.'
+        author: '.$IMAGE_AUTHOR,
     ];
 
     $response = $fb->post('/me/photos', $data);

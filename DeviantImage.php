@@ -61,7 +61,8 @@ class DeviantImage
      */
     public function getAuthorName()
     {
-        return $this->author_name;
+        if(isset($this->author_name)) return $this->author_name;
+        return 'Uknown';
     }
 
     /**

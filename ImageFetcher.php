@@ -218,17 +218,22 @@ class ImageFetcher
 
     }
 
+
     /**
      * @desc FETCH SAVE TRANSFORM Daily Image
      */
-    function FSTDailyImage($path_to_save){
+    function FSTDailyImage($IMAGE_PATH){
 
         $ImgFetcher = new ImageFetcher();
-        $url = $ImgFetcher->randomDaily();
+        $IMAGE_LINK = $ImgFetcher->randomDaily();
 
         try{
 
-            $data = $ImgFetcher->getImageData($url);
+            $data = $ImgFetcher->getImageData($IMAGE_LINK);
+
+            if($data){
+                $IMAGE_AUTHOR = $data->getAuthorName();
+            }
 
             $true_url = $ImgFetcher->directURL($data);
 
@@ -242,7 +247,12 @@ class ImageFetcher
             $img = Image::make($image_path);
 
             $ImgTrans = new ImageTransformer();
-            $ImgTrans->TransformRandomly($img, $path_to_save, $data->getSafety());
+            $ImgTrans->TransformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK);
+
+            return array(
+                'link' => $IMAGE_LINK,
+                'author' => $IMAGE_AUTHOR
+            );
 
         } catch (Exception $e){
             echo $e->getMessage();
