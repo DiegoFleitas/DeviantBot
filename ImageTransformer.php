@@ -92,7 +92,7 @@ class ImageTransformer
                 $img->text($random_string, $posx, $posy);
                 break;
             default :
-                $img->pixelate(10);
+                $img->pixelate(20);
                 break;
         }
 
