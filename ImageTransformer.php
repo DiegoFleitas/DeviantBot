@@ -100,7 +100,14 @@ class ImageTransformer
                 array_push($params, $aux);
                 $img->limitcolors($aux);
                 break;
-            case 14:
+            case 13:
+                $method = 'sharpen';
+                $aux = mt_rand(50, 100);
+                array_push($params, $aux);
+                $img->sharpen($aux);
+                break;
+            case 15:
+                // FIXME: Font file must be provided to apply text to image.
                 $method = 'text';
                 // Generate random string
                 $length = mt_rand(4, 10);
@@ -134,6 +141,7 @@ class ImageTransformer
                 break;
         }
 
+        date_default_timezone_set('America/Montevideo');
         $log_data = "\n[".date("Y/m/d h:i:sa").'] link: '.$IMAGE_LINK.' method: '.$method.' params: '.implode(',',$params);
         // Write the contents to the file,
         // using the FILE_APPEND flag to append the content to the end of the file
