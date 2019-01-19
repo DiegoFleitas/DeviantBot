@@ -6,7 +6,7 @@
  * Time: 1:45 PM
  */
 
-require_once 'deviant2.php';
+require_once 'rrs-links.php';
 
 
 /**

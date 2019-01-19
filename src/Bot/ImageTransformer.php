@@ -10,7 +10,7 @@ break; 11:
 break;52 PM
  */
 
-require_once 'Logger.php';
+require_once 'DataLogger.php';
 
 class ImageTransformer extends DataLogger
 {

@@ -2,10 +2,9 @@
 /**
  * Created by PhpStorm.
  * User: Diego
- * Date: 1/18/2019
- * Time: 9:41 PM
+ * Date: 1/19/2019
+ * Time: 3:44 PM
  */
-
 
 class DataLogger
 {
@@ -15,5 +14,4 @@ class DataLogger
         file_put_contents('logs.log', $timestamp.$data , FILE_APPEND);
         if($die) die();
     }
-
 }

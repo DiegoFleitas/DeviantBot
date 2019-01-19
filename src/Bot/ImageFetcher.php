@@ -9,7 +9,7 @@
 
 require_once 'DeviantImage.php';
 require_once 'ImageTransformer.php';
-require_once 'Logger.php';
+require_once 'DataLogger.php';
 
 use Intervention\Image\ImageManagerStatic as Image;
 

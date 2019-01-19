@@ -6,9 +6,9 @@
  * Time: 12:04 AM
  */
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once realpath(__DIR__ . '/../..'). '/vendor/autoload.php';
 require_once 'ImageFetcher.php';
-require_once 'Logger.php';
+require_once 'DataLogger.php';
 
 $IMAGE_PATH = 'test/transformed_image.jpg';
 
@@ -20,4 +20,4 @@ if($result){
     $IMAGE_AUTHOR = $result['author'];
 }
 
-include_once ('upload-photo.php');
+include_once('upload-photo.php');

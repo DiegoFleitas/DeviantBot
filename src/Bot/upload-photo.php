@@ -6,7 +6,7 @@
  * Time: 10:19 PM
  */
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once realpath(__DIR__ . '/../..') . '/vendor/autoload.php';
 
 require_once 'secrets.php';
 require_once 'ImageTransformer.php';
