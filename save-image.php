@@ -7,8 +7,8 @@
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
-
 require_once 'ImageFetcher.php';
+require_once 'Logger.php';
 
 $IMAGE_PATH = 'test/transformed_image.jpg';
 

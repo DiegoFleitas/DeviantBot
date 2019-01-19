@@ -6,12 +6,14 @@
  * Time: 9:45 PM
  */
 
+
 require_once 'DeviantImage.php';
 require_once 'ImageTransformer.php';
+require_once 'Logger.php';
 
 use Intervention\Image\ImageManagerStatic as Image;
 
-class ImageFetcher
+class ImageFetcher extends DataLogger
 {
 
     /**
@@ -24,8 +26,7 @@ class ImageFetcher
         $url_rss = 'http://backend.deviantart.com/rss.xml?&q=';
 
         if(empty($tags) && empty($keywords) && !$dailydeviations){
-            echo 'buildRSSURL empty url';
-            return false;
+            logdata('['.__METHOD__.' ERROR] empty url', 1);
         }
 
         if($dailydeviations){
@@ -72,10 +73,6 @@ class ImageFetcher
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl, CURLOPT_POSTFIELDS, "");
         curl_setopt($curl, CURLOPT_USERAGENT, $agent);
-        curl_setopt($curl, CURLOPT_HTTPHEADER,  array(
-            "Postman-Token: 8fb92482-5540-4a75-ad8e-0825f73074b8",
-            "cache-control: no-cache"
-        ));
 
         $response = curl_exec($curl);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -84,12 +81,12 @@ class ImageFetcher
         curl_close($curl);
 
         if ($err) {
-            echo $media." cURL Error #:" . $err;
-            return false;
+            $message = $media." cURL Error #:" . $err.'  url: '.$url;
+            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
         } else {
             if($httpcode != '200'){
-                echo $media." Http code error #:" . $httpcode;
-                return false;
+                $message =  $media." Http code error #:" . $httpcode.'  url: '.$url;;
+                $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
             }
             return $response;
         }
@@ -120,24 +117,23 @@ class ImageFetcher
             $CURLOPT_URL = $this->buildRSSURL( $tags, $keywords, 0, 1  );
         }
 
-        if($CURLOPT_URL){
-            $response = $this->getRawDeviantArtData($CURLOPT_URL, 'RSS');
-            if($response){
-                //Process XML
-                try {
-                    $links = $this->parseXMLResponse($response);
-                    if(!empty($links)){
-                        return $links;
-                    } else {
-                        return false;
-                    }
-                } catch (Exception $e){
-                    echo $e;
+        $response = $this->getRawDeviantArtData($CURLOPT_URL, 'RSS');
+        if($response){
+            //Process XML
+            try {
+
+                $links = $this->parseXMLResponse($response);
+
+                if(!empty($links)){
+                    return $links;
                 }
+
+            } catch (Exception $e){
+                echo $e;
             }
-        } else {
-            echo 'Invalid URL';
         }
+
+
     }
 
     /**
@@ -157,19 +153,21 @@ class ImageFetcher
 
 
     function randomDaily(){
+
+        // TODO: check if tags and keywords are enabled on Daily
         $tags = array();
         $keywords = array();
 
-        $all_links = array();
-
         $ImgFetch = new ImageFetcher();
         $links = $ImgFetch->getImagelinksFromRSS($tags, $keywords, 2);
-        foreach($links as $link){
-            array_push($all_links, $link);
+
+        if(!empty($links)){
+            $random_index = mt_rand(0, count($links) - 1);
+            return $links[$random_index];
         }
 
-        $random_index = mt_rand(0, count($links) - 1);
-        return $all_links[$random_index];
+        $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__, 1);
+
     }
 
     function saveImageLocally($url, $path){
@@ -191,12 +189,12 @@ class ImageFetcher
         fclose($fp);
 
         if ($err) {
-            echo "SaveImage cURL Error #:" . $err;
-            return false;
+            $message = "SaveImage cURL Error #:" . $err.' url:'.$url;
+            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
         } else {
             if($httpcode != '200'){
-                echo "SaveImage Http code error #:" . $httpcode;
-                return false;
+                $message =  "SaveImage Http code error #:" . $httpcode.' url:'.$url;
+                $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
             }
             return $response;
         }
@@ -229,25 +227,29 @@ class ImageFetcher
 
         try{
 
-            $data = $ImgFetcher->getImageData($IMAGE_LINK);
+            if(!empty($IMAGE_LINK)){
+                $data = $ImgFetcher->getImageData($IMAGE_LINK);
 
-            if($data){
-                $IMAGE_AUTHOR = $data->getAuthorName();
+                if($data){
+                    $IMAGE_AUTHOR = $data->getAuthorName();
+                }
+
+                $true_url = $ImgFetcher->directURL($data);
+
+                $IMAGE_PATH_NEW = 'test/new_image.jpg';
+
+                $ImgFetcher->saveImageLocally($true_url, $IMAGE_PATH_NEW);
+
+                // configure with favored image driver (gd by default)
+                Image::configure(array('driver' => 'imagick'));
+
+                $img = Image::make($IMAGE_PATH_NEW);
+
+                $ImgTrans = new ImageTransformer();
+                $ImgTrans->TransformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, 2);
+            } else {
+                $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__, 1);
             }
-
-            $true_url = $ImgFetcher->directURL($data);
-
-            $image_path = 'test/new_image.jpg';
-
-            $ImgFetcher->saveImageLocally($true_url, $image_path);
-
-            // configure with favored image driver (gd by default)
-            Image::configure(array('driver' => 'imagick'));
-
-            $img = Image::make($image_path);
-
-            $ImgTrans = new ImageTransformer();
-            $ImgTrans->TransformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK);
 
             return array(
                 'link' => $IMAGE_LINK,
