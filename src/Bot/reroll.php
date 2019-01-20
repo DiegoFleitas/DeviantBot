@@ -13,15 +13,13 @@ require_once 'ImageFetcher.php';
 use Intervention\Image\ImageManagerStatic as Image;
 
 
-// Pixelate remote image
+// Reroll to transform again a remote image
 
-$IMAGE_LINK = 'https://www.deviantart.com/mirodesign/art/SILKY-TOUCH-705653522';
+$IMAGE_LINK = 'https://scontent.fmvd3-1.fna.fbcdn.net/v/t1.0-9/50085482_2238280363055084_5496124642005352448_o.jpg?_nc_cat=108&_nc_ht=scontent.fmvd3-1.fna&oh=1d7d19f12b024de8f3280079caba4fd1&oe=5CB40E70';
 $ImgFetcher = new ImageFetcher();
-$data = $ImgFetcher->getImageData($IMAGE_LINK);
 
-$true_url = $ImgFetcher->directURL($data);
-$image_path = 'test/pixelate.jpg';
-$ImgFetcher->saveImageLocally($true_url, $image_path);
+$image_path = 'test/comment_photo.jpg';
+$ImgFetcher->saveImageLocally($IMAGE_LINK, $image_path);
 
 // configure with favored image driver (gd by default)
 Image::configure(array('driver' => 'imagick'));
@@ -29,4 +27,4 @@ Image::configure(array('driver' => 'imagick'));
 $img = Image::make($image_path);
 
 $ImgTrans = new ImageTransformer();
-$ImgTrans->TransformRandomly($img, $image_path, $data->getSafety(), $IMAGE_LINK, 1);
+$ImgTrans->TransformRandomly($img, $image_path, "nonadult", $IMAGE_LINK, 4);
