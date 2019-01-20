@@ -22,15 +22,19 @@ class ImageFetcher extends DataLogger
      * @param int $newest
      * @return bool|string
      */
-    function buildRSSURL($tags = [], $keywords = [], $newest = 0, $dailydeviations = 0){
+    function buildRSSURL($dailydeviations, $popular, $tags, $keywords){
+
         $url_rss = 'http://backend.deviantart.com/rss.xml?&q=';
 
-        if(empty($tags) && empty($keywords) && !$dailydeviations){
-            logdata('['.__METHOD__.' ERROR] empty url', 1);
-        }
-
         if($dailydeviations){
-            $url_rss .= 'special:dd';
+            // Daily deviations
+            $url_rss .= 'special:dd'.rawurlencode(' ');
+        } elseif($popular) {
+            // Popular from last 24 hours
+            $url_rss .= 'boost:popular'.rawurlencode(' max_age:24h ');
+        } else {
+            // Any
+            $url_rss .= 'meta:all'.rawurlencode(' ');
         }
 
         $params = '';
@@ -42,7 +46,7 @@ class ImageFetcher extends DataLogger
             $params .= 'tag:'.$tag.' ';
         }
 
-        if($newest){
+        if(!$popular){
             $params .= 'sort:time ';
         }
 
@@ -82,11 +86,11 @@ class ImageFetcher extends DataLogger
 
         if ($err) {
             $message = $media." cURL Error #:" . $err.'  url: '.$url;
-            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } else {
             if($httpcode != '200'){
-                $message =  $media." Http code error #:" . $httpcode.'  url: '.$url;;
-                $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+                $message =  $media." Http code error #:" . $httpcode.'  url: '.$url;
+                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
             return $response;
         }
@@ -107,14 +111,20 @@ class ImageFetcher extends DataLogger
      * @param int $type 1 for newest (tagged keyword) 2 for daily deviations (tagged keyword)
      * @return bool|mixed
      */
-    function getImagelinksFromRSS($tags, $keywords, $type = 1){
+    function getImagelinksFromRSS($type, $tags, $keywords){
 
-        // Newest tagged
-        if($type == 1){
-            $CURLOPT_URL = $this->buildRSSURL( $tags, $keywords, 1  );
-        } elseif($type == 2){
+        if($type == 'DAILY'){
             // DailyDeviations
-            $CURLOPT_URL = $this->buildRSSURL( $tags, $keywords, 0, 1  );
+            //http://backend.deviantart.com/rss.xml?q=special:dd sort:time
+            $CURLOPT_URL = $this->buildRSSURL( true, false, $tags, $keywords);
+        } elseif($type == 'POPULAR'){
+            // Newest popular
+            //http://backend.deviantart.com/rss.xml?q=boost:popular max_age:24h sort:time
+            $CURLOPT_URL = $this->buildRSSURL( false, true, $tags, $keywords);
+        } elseif($type == 'ANY'){
+            // Newest Any
+            //http://backend.deviantart.com/rss.xml?q=meta:all sort:time
+            $CURLOPT_URL = $this->buildRSSURL( false, false, $tags, $keywords);
         }
 
         $response = $this->getRawDeviantArtData($CURLOPT_URL, 'RSS');
@@ -129,7 +139,8 @@ class ImageFetcher extends DataLogger
                 }
 
             } catch (Exception $e){
-                echo $e;
+                $message = $e->getMessage();
+                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
         }
 
@@ -152,21 +163,23 @@ class ImageFetcher extends DataLogger
     }
 
 
-    function randomDaily(){
+    /**
+     * @param $TYPE DAILY | POPULAR | ANY
+     * @return mixed
+     */
+    function getRandom($TYPE, $tags, $keywords){
 
         // TODO: check if tags and keywords are enabled on Daily
-        $tags = array();
-        $keywords = array();
 
         $ImgFetch = new ImageFetcher();
-        $links = $ImgFetch->getImagelinksFromRSS($tags, $keywords, 2);
+        $links = $ImgFetch->getImagelinksFromRSS($TYPE, $tags, $keywords);
 
         if(!empty($links)){
             $random_index = mt_rand(0, count($links) - 1);
             return $links[$random_index];
         }
 
-        $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__, 1);
+        $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__, 1);
 
     }
 
@@ -190,11 +203,11 @@ class ImageFetcher extends DataLogger
 
         if ($err) {
             $message = "SaveImage cURL Error #:" . $err.' url:'.$url;
-            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } else {
             if($httpcode != '200'){
                 $message =  "SaveImage Http code error #:" . $httpcode.' url:'.$url;
-                $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
             return $response;
         }
@@ -216,21 +229,19 @@ class ImageFetcher extends DataLogger
 
     }
 
-
-    /**
-     * @desc FETCH SAVE TRANSFORM Daily Image
-     */
-    function FSTDailyImage($IMAGE_PATH){
+    function FetchSaveTransform($TYPE, $IMAGE_PATH, $tags, $keywords){
 
         $ImgFetcher = new ImageFetcher();
-        $IMAGE_LINK = $ImgFetcher->randomDaily();
+        $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, $tags, $keywords);
 
         try{
 
             if(!empty($IMAGE_LINK)){
+
                 $data = $ImgFetcher->getImageData($IMAGE_LINK);
 
-                if($data){
+                if(isset($data)){
+                    // If not set returns Uknown
                     $IMAGE_AUTHOR = $data->getAuthorName();
                 }
 
@@ -248,7 +259,7 @@ class ImageFetcher extends DataLogger
                 $ImgTrans = new ImageTransformer();
                 $ImgTrans->TransformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, 2);
             } else {
-                $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__, 1);
+                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__, 1);
             }
 
             return array(
@@ -257,7 +268,8 @@ class ImageFetcher extends DataLogger
             );
 
         } catch (Exception $e){
-            echo $e->getMessage();
+            $message =  $e->getMessage();
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
 
     }

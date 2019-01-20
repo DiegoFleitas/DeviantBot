@@ -8,11 +8,13 @@
 
 //  Media RSS
 //    Browse Newest Deviations (including subcategories)
-//https://backend.deviantart.com/rss.xml?type=deviation&q=by:spyed sort:time meta:all
-//http://backend.deviantart.com/rss.xml?q=in:photography+sort:time
+//https://backend.deviantart.com/rss.xml?type=deviation&q=sort:time meta:all
+//https://backend.deviantart.com/rss.xml?type=deviation&q=by:spyed
+//http://backend.deviantart.com/rss.xml?q=in:photography
 //    Search Deviations
 //https://backend.deviantart.com/rss.xml?type=deviation&q=boost:popular in:digitalart/drawings frogs
 //http://backend.deviantart.com/rss.xml?q=boost:popular+fish
+//http://backend.deviantart.com/rss.xml?q=boost:popular max_age:24h
 //    User Gallery
 //http://backend.deviantart.com/rss.xml?q=gallery:mudimba
 //    User Favorites
@@ -58,23 +60,45 @@
 //    https://www.deviantart.com/newest/?q=BERSERK+#oc => https://backend.deviantart.com/rss.xml?&q=berserk sort:time tag:oc
 //    https://www.deviantart.com/newest/?q=#OC+#BERSERK => https://backend.deviantart.com/rss.xml?&q=sort:time tag:oc tag:berserk
 
-$url_web = 'https://www.deviantart.com/newest';
+require_once realpath(__DIR__ . '/../..'). '/vendor/autoload.php';
+require_once 'secrets.php';
+require_once 'ImageTransformer.php';
+require_once 'ImageFetcher.php';
+require_once 'FacebookHelper.php';
+require_once 'DataLogger.php';
 
-include_once('DeviantImage.php');
 
-$ALL_IMAGES = [];
+$dt = new DataLogger();
+$dt->logdata('[POPULAR]');
 
-// default tags
-$tags = array(
-    'berserk',
-    'oc'
-);
+# v5 with default access token fallback
+$fb = new Facebook\Facebook([
+    'app_id' => $_APP_ID,
+    'app_secret' => $_APP_SECRET,
+    'default_graph_version' => 'v2.10',
+]);
+$fb->setDefaultAccessToken($_ACCESS_TOKEN_DEBUG);
+
+
+$IMAGE_PATH = 'test/transformed_image.jpg';
+$tags = array();
 $keywords = array();
 
-$ImgFetch = new ImageFetcher();
-$links = $ImgFetch->getImagelinksFromRSS($tags, $keywords, 1);
-foreach($links as $link){
-    $ALL_IMAGES[$link] = $ImgFetch->getImageData($link);
-}
+$ImgFetcher = new ImageFetcher();
+$result = $ImgFetcher->FetchSaveTransform('POPULAR', $IMAGE_PATH, $tags, $keywords);
+$IMAGE_LINK = $result['link'];
+$IMAGE_AUTHOR = $result['author'];
 
-print_r($ALL_IMAGES);
+//$IMAGE_AUTHOR should always be set by now
+if(isset($IMAGE_LINK)){
+
+    // Make post with popular random image
+    $FBhelper = new FacebookHelper();
+    $FBhelper->newPost($fb, $IMAGE_PATH, $IMAGE_LINK, $IMAGE_AUTHOR);
+
+} else {
+
+    $message = 'POPULAR incomplete result, no link';
+    $dt->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
+
+}

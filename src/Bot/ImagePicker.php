@@ -9,12 +9,12 @@
 class ImagePicker
 {
 
-    function pickTerribleImage($json_data){
+    function isTerribleImage($devimg){
 
         $isTerribleImage = $isExtraTerribleImage = false;
 
         // No zucc pls
-        if($json_data->safety !== 'nonadult'){
+        if($devimg->getSafety() !== 'nonadult'){
             return false;
         }
 
@@ -24,7 +24,7 @@ class ImagePicker
             'skeletonnekogems12'
         );
 
-        $isTerribleAuthor = in_array($json_data->author_name, $terrible_users);
+        $isTerribleAuthor = in_array($devimg->getAuthor(), $terrible_users);
 
         if(isset($json_data->tags)){
 
@@ -102,7 +102,7 @@ class ImagePicker
                 '#fatbelliedwoman',
             );
 
-            $image_tags = explode(',', $json_data->tags);
+            $image_tags = explode(',', $devimg->getTags());
             $isTerribleImage = array_intersect($image_tags, $terrible_tags);
             $isExtraTerribleImage = array_intersect($image_tags, $extra_terrible_tags);
         }

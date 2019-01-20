@@ -38,10 +38,10 @@ class FacebookHelper extends DataLogger
 
             } catch(Facebook\Exceptions\FacebookResponseException $e) {
                 $message = 'Graph returned an error: ' . $e->getMessage();
-                $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             } catch(Facebook\Exceptions\FacebookSDKException $e) {
                 $message = 'Facebook SDK returned an error: ' . $e->getMessage();
-                $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
         }
     }
@@ -69,10 +69,10 @@ class FacebookHelper extends DataLogger
 
         } catch(Facebook\Exceptions\FacebookResponseException $e) {
             $message = 'Graph returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } catch(Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
 
     }
@@ -88,10 +88,10 @@ class FacebookHelper extends DataLogger
 
         } catch(Facebook\Exceptions\FacebookResponseException $e) {
             $message = 'Graph returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } catch(Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
 
     }
@@ -114,14 +114,15 @@ class FacebookHelper extends DataLogger
 
             // Move image to avoid posting it again
             date_default_timezone_set('America/Montevideo');
-            copy($IMAGE_PATH, 'posted/'.date("Y-m-d h_i_sa").'.jpg');
+            // Formatted this way so files get sorted correctly
+            copy($IMAGE_PATH, 'posted/'.date("Y-m-d H_i_s").'.jpg');
 
         } catch(Facebook\Exceptions\FacebookResponseException $e) {
             $message = 'Graph returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } catch(Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__DIR__.':'.__LINE__.' '.$message, 1);
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
 
     }
