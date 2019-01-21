@@ -10,6 +10,7 @@
 require_once 'DeviantImage.php';
 require_once 'ImageTransformer.php';
 require_once 'DataLogger.php';
+require_once 'ImageClassifier.php';
 
 use Intervention\Image\ImageManagerStatic as Image;
 
@@ -106,11 +107,6 @@ class ImageFetcher extends DataLogger
         }
     }
 
-    /**
-     * @param $tags
-     * @param int $type 1 for newest (tagged keyword) 2 for daily deviations (tagged keyword)
-     * @return bool|mixed
-     */
     function getImagelinksFromRSS($type, $tags, $keywords){
 
         if($type == 'DAILY'){
@@ -247,7 +243,7 @@ class ImageFetcher extends DataLogger
 
                 $true_url = $ImgFetcher->directURL($data);
 
-                $IMAGE_PATH_NEW = 'test/new_image.jpg';
+                $IMAGE_PATH_NEW = 'test/original-image.jpg';
 
                 $ImgFetcher->saveImageLocally($true_url, $IMAGE_PATH_NEW);
 
@@ -262,9 +258,13 @@ class ImageFetcher extends DataLogger
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__, 1);
             }
 
+            $ImageClassify = new ImageClassifier();
+
             return array(
                 'link' => $IMAGE_LINK,
-                'author' => $IMAGE_AUTHOR
+                'author' => $IMAGE_AUTHOR,
+                'comment' => $ImageClassify->getComment($data),
+                'photo' => $ImageClassify->getPhoto($data)
             );
 
         } catch (Exception $e){

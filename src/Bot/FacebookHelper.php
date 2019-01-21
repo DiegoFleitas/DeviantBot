@@ -46,7 +46,7 @@ class FacebookHelper extends DataLogger
         }
     }
 
-    function postCommentToReference($fb, $ID_REFERENCE, $message, $photo){
+    function postCommentToReference($fb, $ID_REFERENCE, $COMMENT, $COMMENT_PHOTO){
 
 //        $POST_ID = '276699869694101';
 //        $COMMENT_ID = '276699869694101_276797539684334';
@@ -55,12 +55,14 @@ class FacebookHelper extends DataLogger
 
         try {
 
-            $data = array (
-                'message' => $message,
-            );
+            $data = array ();
 
-            if(!empty($photo)){
-                $data['source'] = $fb->fileToUpload($photo);
+            if(!empty($COMMENT)){
+                $data['message'] = $COMMENT;
+            }
+
+            if(!empty($COMMENT_PHOTO)){
+                $data['source'] = $fb->fileToUpload($COMMENT_PHOTO);
             }
 
             // $ID_REFERENCE Could either be a post or a comment
@@ -96,7 +98,7 @@ class FacebookHelper extends DataLogger
 
     }
 
-    function newPost($fb, $IMAGE_PATH, $IMAGE_LINK, $IMAGE_AUTHOR){
+    function newPost($fb, $IMAGE_PATH, $IMAGE_LINK, $IMAGE_AUTHOR, $COMMENT, $COMMENT_PHOTO){
 
         try {
 
@@ -111,6 +113,14 @@ class FacebookHelper extends DataLogger
             );
 
             $response = $fb->post('/me/photos', $data);
+
+            // if data has been passed post comment
+            if(!empty($COMMENT) || !empty($COMMENT_PHOTO)){
+
+                $graphNode = $response->getGraphNode();
+                $post_id = $graphNode->getField('id');
+                $this->postCommentToReference($fb, $post_id, $COMMENT, $COMMENT_PHOTO);
+            }
 
             // Move image to avoid posting it again
             date_default_timezone_set('America/Montevideo');

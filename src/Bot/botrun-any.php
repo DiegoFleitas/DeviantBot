@@ -33,13 +33,16 @@ $ImgFetcher = new ImageFetcher();
 $result = $ImgFetcher->FetchSaveTransform('ANY', $IMAGE_PATH, $tags, $keywords);
 $IMAGE_LINK = $result['link'];
 $IMAGE_AUTHOR = $result['author'];
+$COMMENT = $result['comment'];
+$COMMENT_PHOTO = $result['comment_photo'];
 
 //$IMAGE_AUTHOR should always be set by now
 if(isset($IMAGE_LINK)){
 
     // Make post with any random image
     $FBhelper = new FacebookHelper();
-    $FBhelper->newPost($fb, $IMAGE_PATH, $IMAGE_LINK, $IMAGE_AUTHOR);
+    $FBhelper->newPost($fb, $IMAGE_PATH, $IMAGE_LINK, $IMAGE_AUTHOR, $COMMENT, $COMMENT_PHOTO);
+
 
 } else {
 

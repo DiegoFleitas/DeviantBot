@@ -54,7 +54,45 @@ class DeviantImage
         $this->height = $data->height;
         if(isset($data->imagetype)) $this->imagetype = $data->imagetype;
         if(isset($data->thumbnail_url)) $this->thumbnail_url = $data->thumbnail_url;
+        if(isset($data->category)) $this->category = $data->category;
+        $this->classification = null;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param mixed $category
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+    }
+
+
+
+    /**
+     * @return null
+     */
+    public function getClassification()
+    {
+        return $this->classification;
+    }
+
+    /**
+     * @param null $classification
+     */
+    public function setClassification($classification)
+    {
+        $this->classification = $classification;
+    }
+
+
 
     /**
      * @return mixed
