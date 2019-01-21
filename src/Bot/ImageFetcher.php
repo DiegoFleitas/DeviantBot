@@ -264,7 +264,7 @@ class ImageFetcher extends DataLogger
                 'link' => $IMAGE_LINK,
                 'author' => $IMAGE_AUTHOR,
                 'comment' => $ImageClassify->getComment($data),
-                'photo' => $ImageClassify->getPhoto($data)
+                'comment_photo' => $ImageClassify->getPhoto($data)
             );
 
         } catch (Exception $e){
