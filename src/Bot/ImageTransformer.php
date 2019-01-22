@@ -87,7 +87,8 @@ class ImageTransformer extends DataLogger
 
                 // 100 being the brightesst
                 $method = 'brightness';
-                $aux = mt_rand(-100, 100);
+                // $aux = mt_rand(-100, 100); //too dark, too bright
+                $aux = mt_rand(-50, 50);
                 array_push($params, $aux);
                 $img->brightness($aux);
                 break;
@@ -99,7 +100,8 @@ class ImageTransformer extends DataLogger
                 }
 
                 $method = 'contrast';
-                $aux = mt_rand(-100, 100);
+                // $aux = mt_rand(-100, 100); //too dark, too bright
+                $aux = mt_rand(-50, 50);
                 array_push($params, $aux);
                 $img->contrast($aux);
                 break;
@@ -131,7 +133,8 @@ class ImageTransformer extends DataLogger
 
                 // 100 being the full opacity
                 $method = 'opacity';
-                $aux = mt_rand(1, 15);
+                // $aux = mt_rand(0, 100);
+                $aux = mt_rand(30, 70);
                 array_push($params, $aux);
                 $img->opacity($aux);
                 break;

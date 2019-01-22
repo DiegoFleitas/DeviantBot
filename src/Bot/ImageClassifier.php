@@ -136,7 +136,7 @@ class ImageClassifier
                 $devimg->setClassification('bad');
             } else {
                 $category = $devimg->getCategory();
-                if (strpos($category, 'Antro') !== false) {
+                if (strpos($category, 'Anthro') !== false) {
                     $devimg->setClassification('bad');
                 }
             }
