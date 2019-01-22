@@ -6,6 +6,8 @@
  * Time: 9:46 PM
  */
 
+use Intervention\Image\ImageManagerStatic as Image;
+
 class ImageClassifier
 {
 
@@ -138,6 +140,9 @@ class ImageClassifier
                     $devimg->setClassification('bad');
                 }
             }
+
+            return $devimg->getClassification();
+
         }
 
     }
@@ -148,9 +153,9 @@ class ImageClassifier
 
         $type = $this->classify($devimg);
         if($type == 'bad'){
-            $PATH = 'negative/'. mt_rand(1, 47).'jpg';
+            $PATH = 'reactions/negative/'. mt_rand(1, 47).'.jpg';
         } elseif($type == 'nsfw'){
-            $PATH = 'tempted/'. mt_rand(1, 27).'jpg';
+            $PATH = 'reactions/tempted/'. mt_rand(1, 27).'.jpg';
         }
 
         // if its worth to react
