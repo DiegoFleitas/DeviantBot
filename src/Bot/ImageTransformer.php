@@ -80,8 +80,8 @@ class ImageTransformer extends DataLogger
                 break;
             case 6:
 
-                // 50% chance to reroll
-                if(mt_rand(0, 1)){
+                // 75% chance to reroll
+                if(mt_rand(0, 3)){
                     $this->randomTransformation($img);
                 }
 
@@ -93,8 +93,8 @@ class ImageTransformer extends DataLogger
                 break;
             case 7:
 
-                // 50% chance to reroll
-                if(mt_rand(0, 1)){
+                // 75% chance to reroll
+                if(mt_rand(0, 3)){
                     $this->randomTransformation($img);
                 }
 
@@ -124,8 +124,8 @@ class ImageTransformer extends DataLogger
                 break;
             case 11:
 
-                // 50% chance to reroll
-                if(mt_rand(0, 1)){
+                // 75% chance to reroll
+                if(mt_rand(0, 3)){
                     $this->randomTransformation($img);
                 }
 
