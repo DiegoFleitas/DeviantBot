@@ -215,6 +215,7 @@ class ImageFetcher extends DataLogger
         /** @var $DeviantImage DeviantImage */
         $h = $DeviantImage->getHeight();
         $w = $DeviantImage->getWidth();
+
         $url = $DeviantImage->getThumbnailUrl();
 
         $aux1 = 'fill/w_'. $w . ',h_'. $h;
@@ -242,6 +243,11 @@ class ImageFetcher extends DataLogger
                 }
 
                 $true_url = $ImgFetcher->directURL($data);
+
+                if(empty($true_url)){
+                    $message = 'Image link: '.$IMAGE_LINK;
+                    $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
+                }
 
                 $IMAGE_PATH_NEW = 'test/original-image.jpg';
 
