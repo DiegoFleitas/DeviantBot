@@ -123,7 +123,6 @@ class FacebookHelper extends DataLogger
             }
 
             // Move image to avoid posting it again
-            date_default_timezone_set('America/Montevideo');
             // Formatted this way so files get sorted correctly
             copy($IMAGE_PATH, 'posted/'.date("Y-m-d H_i_s").'.jpg');
 
