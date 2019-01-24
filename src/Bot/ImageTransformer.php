@@ -15,6 +15,13 @@ require_once 'DataLogger.php';
 class ImageTransformer extends DataLogger
 {
 
+    /**
+     * @param \Intervention\Image\Image $img
+     * @param string $path
+     * @param string $safety
+     * @param string $IMAGE_LINK
+     * @param int $n
+     */
     function TransformRandomly($img, $path, $safety, $IMAGE_LINK, $n = 1){
 
         // n is how many rolls
@@ -34,8 +41,9 @@ class ImageTransformer extends DataLogger
     }
 
 
+
     /**
-     * @param $img
+     * @param \Intervention\Image\Image $img
      * @param string $safety
      * @return array
      * @desc Transforms the image randomly (Except adult)

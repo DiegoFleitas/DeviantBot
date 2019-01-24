@@ -8,6 +8,10 @@
 
 class DataLogger
 {
+    /**
+     * @param $data
+     * @param bool $die
+     */
     public function logdata($data, $die = false){
         $timestamp = "\n[".date("Y/m/d h:i:sa").'] ';
         // daily log files

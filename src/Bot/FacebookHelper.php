@@ -15,7 +15,12 @@ require_once 'ImageFetcher.php';
 class FacebookHelper extends DataLogger
 {
 
-    function getFirstPhotoReply($fb, $POST_ID, $getimages){
+    /**
+     * @param Facebook\Facebook $fb
+     * @param string $POST_ID
+     * @return mixed
+     */
+    function getFirstPhotoReply($fb, $POST_ID){
 
 //        $POST_ID = '276699869694101';
         if(!empty($POST_ID)){
@@ -46,6 +51,12 @@ class FacebookHelper extends DataLogger
         }
     }
 
+    /**
+     * @param Facebook\Facebook $fb
+     * @param string $ID_REFERENCE
+     * @param string $COMMENT
+     * @param string $COMMENT_PHOTO
+     */
     function postCommentToReference($fb, $ID_REFERENCE, $COMMENT, $COMMENT_PHOTO){
 
 //        $POST_ID = '276699869694101';
@@ -79,6 +90,11 @@ class FacebookHelper extends DataLogger
 
     }
 
+    /**
+     * @param Facebook\Facebook $fb
+     * @param string $POST_ID
+     * @return \Facebook\GraphNodes\GraphNode
+     */
     function getPost($fb, $POST_ID){
 
         try {
@@ -98,6 +114,14 @@ class FacebookHelper extends DataLogger
 
     }
 
+    /**
+     * @param Facebook\Facebook $fb
+     * @param string $IMAGE_PATH
+     * @param string $IMAGE_LINK
+     * @param string $IMAGE_AUTHOR
+     * @param string $COMMENT
+     * @param string $COMMENT_PHOTO
+     */
     function newPost($fb, $IMAGE_PATH, $IMAGE_LINK, $IMAGE_AUTHOR, $COMMENT, $COMMENT_PHOTO){
 
         try {
@@ -125,6 +149,13 @@ class FacebookHelper extends DataLogger
             // Move image to avoid posting it again
             // Formatted this way so files get sorted correctly
             copy($IMAGE_PATH, 'posted/'.date("Y-m-d H_i_s").'.jpg');
+            // FIXME this is wrong
+            fclose($IMAGE_PATH);
+            if(unlink($IMAGE_PATH)){
+                $this->logdata('the file was copied and deleted.');
+            } else {
+                $this->logdata('the file couldn\'t deleted.');
+            }
 
         } catch(Facebook\Exceptions\FacebookResponseException $e) {
             $message = 'Graph returned an error: ' . $e->getMessage();

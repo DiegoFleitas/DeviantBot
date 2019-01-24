@@ -35,7 +35,7 @@ class DeviantImage
 
     /**
      * DeviantImage constructor.
-     * @param $json
+     * @param string $json
      */
     public function __construct($json)
     {
@@ -75,7 +75,6 @@ class DeviantImage
     }
 
 
-
     /**
      * @return null
      */
@@ -93,9 +92,8 @@ class DeviantImage
     }
 
 
-
     /**
-     * @return mixed
+     * @return string
      */
     public function getAuthorName()
     {

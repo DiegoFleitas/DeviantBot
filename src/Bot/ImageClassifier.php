@@ -11,8 +11,14 @@ use Intervention\Image\ImageManagerStatic as Image;
 class ImageClassifier
 {
 
+    /**
+     * @param string $tags
+     * @return bool
+     */
     function classifyByTags($tags){
 
+
+        //<editor-fold desc="$meme_material and $terrible Arrays">
         $meme_material = array(
             'oc',
             'fatoc',
@@ -107,6 +113,7 @@ class ImageClassifier
             'thick',
             'fatbelliedwoman',
         );
+        //</editor-fold>
 
         $image_tags = explode(', ', $tags);
         $isTerribleImage = array_intersect($image_tags, $terrible);
@@ -119,6 +126,10 @@ class ImageClassifier
 
     }
 
+    /**
+     * @param DeviantImage $devimg
+     * @return mixed
+     */
     function classify($devimg){
 
         if(null !== $devimg->getClassification()){
@@ -147,6 +158,10 @@ class ImageClassifier
 
     }
 
+    /**
+     * @param DeviantImage $devimg
+     * @return string
+     */
     function getPhoto($devimg){
 
         $PATH = '';
@@ -177,6 +192,10 @@ class ImageClassifier
     }
 
 
+    /**
+     * @param DeviantImage $devimg
+     * @return mixed|string
+     */
     function getComment($devimg){
 
         $comment = '';

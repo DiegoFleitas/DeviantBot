@@ -17,11 +17,13 @@ use Intervention\Image\ImageManagerStatic as Image;
 class ImageFetcher extends DataLogger
 {
 
+
     /**
+     * @param string $dailydeviations
+     * @param string $popular
      * @param array $tags
      * @param array $keywords
-     * @param int $newest
-     * @return bool|string
+     * @return string
      */
     function buildRSSURL($dailydeviations, $popular, $tags, $keywords){
 
@@ -56,10 +58,11 @@ class ImageFetcher extends DataLogger
         return $url_rss;
     }
 
+
     /**
      * @desc GET request to DeviantArt servers
-     * @param $url
-     * @param string $type
+     * @param string $url
+     * @param string $media
      * @return bool|string
      */
     function getRawDeviantArtData($url, $media = 'JSON'){
@@ -97,6 +100,10 @@ class ImageFetcher extends DataLogger
         }
     }
 
+    /**
+     * @param string $link
+     * @return DeviantImage
+     */
     function getImageData($link){
 
         $CURLOPT_URL = "https://backend.deviantart.com/oembed?url=".rawurlencode($link);
@@ -107,6 +114,12 @@ class ImageFetcher extends DataLogger
         }
     }
 
+    /**
+     * @param string $type
+     * @param array $tags
+     * @param array $keywords
+     * @return mixed
+     */
     function getImagelinksFromRSS($type, $tags, $keywords){
 
         if($type == 'DAILY'){
@@ -144,9 +157,9 @@ class ImageFetcher extends DataLogger
     }
 
     /**
-     * @desc Test parse and access SimpleXMLElement from local XML
-     * @param null $response
-     * @return mixed
+     * @desc parse and access SimpleXMLElement from local XML
+     * @param string $response
+     * @return array
      */
     function parseXMLResponse($response){
         $xml = new SimpleXMLElement($response);
@@ -160,7 +173,9 @@ class ImageFetcher extends DataLogger
 
 
     /**
-     * @param $TYPE DAILY | POPULAR | ANY
+     * @param string $TYPE
+     * @param array $tags
+     * @param array $keywords
      * @return mixed
      */
     function getRandom($TYPE, $tags, $keywords){
@@ -179,6 +194,11 @@ class ImageFetcher extends DataLogger
 
     }
 
+    /**
+     * @param string $url
+     * @param string $path
+     * @return bool|string
+     */
     function saveImageLocally($url, $path){
 
         $curl = curl_init($url);
@@ -210,9 +230,12 @@ class ImageFetcher extends DataLogger
 
     }
 
+    /**
+     * @param DeviantImage $DeviantImage
+     * @return mixed
+     */
     function directURL($DeviantImage){
 
-        /** @var $DeviantImage DeviantImage */
         $h = $DeviantImage->getHeight();
         $w = $DeviantImage->getWidth();
 
@@ -226,6 +249,13 @@ class ImageFetcher extends DataLogger
 
     }
 
+    /**
+     * @param string $TYPE
+     * @param string $IMAGE_PATH
+     * @param array $tags
+     * @param array $keywords
+     * @return array
+     */
     function FetchSaveTransform($TYPE, $IMAGE_PATH, $tags, $keywords){
 
         $ImgFetcher = new ImageFetcher();
