@@ -126,9 +126,11 @@ class FacebookHelper extends DataLogger
 
         try {
 
+            $fbfile = $fb->fileToUpload($IMAGE_PATH);
+
             # fileToUpload works with remote and local images
             $data = array(
-                'source' => $fb->fileToUpload($IMAGE_PATH),
+                'source' => $fbfile,
                 'message' => 'Beep Boop I found this, but I think it got corrupted along the way.
                 
                 Original image: 
@@ -146,11 +148,12 @@ class FacebookHelper extends DataLogger
                 $this->postCommentToReference($fb, $post_id, $COMMENT, $COMMENT_PHOTO);
             }
 
+            // Close stream so we are able to unlink the image later
+            $fbfile->close();
+
             // Move image to avoid posting it again
             // Formatted this way so files get sorted correctly
             copy($IMAGE_PATH, 'posted/'.date("Y-m-d H_i_s").'.jpg');
-            // FIXME this is wrong
-            fclose($IMAGE_PATH);
             if(unlink($IMAGE_PATH)){
                 $this->logdata('the file was copied and deleted.');
             } else {
