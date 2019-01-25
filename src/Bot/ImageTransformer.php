@@ -1,13 +1,9 @@
 <?php
 /**
  * Created by PhpStorm.
- * User:
-break; Diego
- * Date:
-break; 1/15/2019
- * Time:
-break; 11:
-break;52 PM
+ * User: Diego
+ * Date: 1/15/2019
+ * Time: 11:52 PM
  */
 
 require_once 'DataLogger.php';
