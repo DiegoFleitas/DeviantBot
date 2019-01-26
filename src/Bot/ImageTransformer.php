@@ -55,7 +55,7 @@ class ImageTransformer extends DataLogger
         $params = array();
 
         if(!$forcefilter){
-            $do = mt_rand(1, 14);
+            $do = mt_rand(1, 16);
 
             // if unsafe, pixelate
             if($safety !== 'nonadult'){
@@ -76,7 +76,6 @@ class ImageTransformer extends DataLogger
                     $method = 'flip horizontally';
                     $img->flip('h');
                 }
-
                 break;
 
             case 2:
@@ -112,7 +111,6 @@ class ImageTransformer extends DataLogger
                         $draw->width(5);
                     });
                 }
-
                 break;
 
             case 4:
@@ -205,7 +203,6 @@ class ImageTransformer extends DataLogger
                 $aux = mt_rand($actual_width * 0.07, $actual_width * 0.1);
                 array_push($params, $aux);
                 $img->widen($aux);
-
                 break;
 
             case 12:
