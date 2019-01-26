@@ -99,7 +99,8 @@ class ImageTransformer extends DataLogger
                     $posx2 = mt_rand(0 , $width);
                     $posy2 = mt_rand(0 , $height);
 
-                    array_push($params, 'line'.$i+1);
+                    $message = 'line'.($i+1);
+                    array_push($params, $message);
                     array_push($params, $posx1);
                     array_push($params, $posy1);
                     array_push($params, $posx2);
@@ -308,6 +309,11 @@ class ImageTransformer extends DataLogger
                 $img->pixelate($aux);
                 break;
 
+        }
+
+        // no params
+        if(count($params) < 1){
+            array_push($params, 'none');
         }
 
         return array(
