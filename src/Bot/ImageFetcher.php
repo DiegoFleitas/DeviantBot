@@ -289,7 +289,10 @@ class ImageFetcher extends DataLogger
                 $img = Image::make($IMAGE_PATH_NEW);
 
                 $ImgTrans = new ImageTransformer();
-                $ImgTrans->TransformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, 2);
+
+                // Transform only once
+                $TRANSFORM_TIMES = 1;
+                $ImgTrans->TransformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, $TRANSFORM_TIMES);
             } else {
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__, 1);
             }
