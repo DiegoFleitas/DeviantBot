@@ -50,7 +50,7 @@ class ImageTransformer extends DataLogger
      * @return array
      * @desc Transforms the image randomly (Except adult)
      */
-    function randomTransformation($img, $safety = 'nonadult', $forcefilter){
+    function randomTransformation($img, $safety = 'nonadult', $forcefilter = false){
 
         $params = array();
 
