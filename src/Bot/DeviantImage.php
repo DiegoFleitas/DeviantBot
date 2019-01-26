@@ -56,6 +56,23 @@ class DeviantImage
         if(isset($data->thumbnail_url)) $this->thumbnail_url = $data->thumbnail_url;
         if(isset($data->category)) $this->category = $data->category;
         $this->classification = null;
+        $this->params = null;
+    }
+
+    /**
+     * @return null
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
+     * @param null $params
+     */
+    public function setParams($params)
+    {
+        $this->params = $params;
     }
 
     /**

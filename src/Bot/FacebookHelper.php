@@ -117,12 +117,11 @@ class FacebookHelper extends DataLogger
     /**
      * @param Facebook\Facebook $fb
      * @param string $IMAGE_PATH
-     * @param string $IMAGE_LINK
-     * @param string $IMAGE_AUTHOR
+     * @param string $MESSAGE
      * @param string $COMMENT
      * @param string $COMMENT_PHOTO
      */
-    function newPost($fb, $IMAGE_PATH, $IMAGE_LINK, $IMAGE_AUTHOR, $COMMENT, $COMMENT_PHOTO){
+    function newPost($fb, $IMAGE_PATH, $MESSAGE, $COMMENT, $COMMENT_PHOTO){
 
         try {
 
@@ -131,11 +130,7 @@ class FacebookHelper extends DataLogger
             # fileToUpload works with remote and local images
             $data = array(
                 'source' => $fbfile,
-                'message' => 'Beep Boop I found this, but I think it got corrupted along the way.
-                
-                Original image: 
-                '.$IMAGE_LINK.'
-                author: '.$IMAGE_AUTHOR,
+                'message' => $MESSAGE
             );
 
             $response = $fb->post('/me/photos', $data);

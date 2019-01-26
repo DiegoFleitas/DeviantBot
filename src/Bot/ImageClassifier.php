@@ -191,7 +191,6 @@ class ImageClassifier
 
     }
 
-
     /**
      * @param DeviantImage $devimg
      * @return mixed|string
@@ -224,6 +223,22 @@ class ImageClassifier
         }
         return $comment;
 
+    }
+
+
+    /**
+     * @param string $IMAGE_LINK
+     * @param string $IMAGE_AUTHOR
+     * @param string $params
+     * @return string
+     */
+    function getPostMessage($IMAGE_LINK, $IMAGE_AUTHOR, $params){
+        return 'Beep Boop I found this, but I think it got corrupted along the way.
+                
+                ~'.$params.'~
+                Original image: 
+                '.$IMAGE_LINK.'
+                author: '.$IMAGE_AUTHOR;
     }
 
 }

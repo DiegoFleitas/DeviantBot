@@ -18,6 +18,7 @@ class ImageTransformer extends DataLogger
      * @param string $IMAGE_LINK
      * @param int $n
      * @param bool $forcefilter
+     * @return string
      */
     function TransformRandomly($img, $path, $safety, $IMAGE_LINK, $n = 1, $forcefilter = false){
 
@@ -27,13 +28,18 @@ class ImageTransformer extends DataLogger
 
             $result = $this->randomTransformation($img, $safety, $forcefilter);
 
-
             $this->logdata('link: '.$IMAGE_LINK.' method: '.$result['method'].' params: '.$result['params']);
         }
 
 
         // TODO: The optimal size for post (shared) images is 1,200 x 630 pixels.
         $img->save($path);
+
+        if(isset($result['params']) && isset($result['method'])){
+            return 'method: '.$result['method'].' params: '.$result['params'];
+        } else {
+            return '';
+        }
 
     }
 
@@ -94,7 +100,7 @@ class ImageTransformer extends DataLogger
                     $posx2 = mt_rand(0 , $width);
                     $posy2 = mt_rand(0 , $height);
 
-                    array_push($params, 'line'.$i);
+                    array_push($params, 'line'.$i+1);
                     array_push($params, $posx1);
                     array_push($params, $posy1);
                     array_push($params, $posx2);

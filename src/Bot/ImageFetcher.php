@@ -292,7 +292,8 @@ class ImageFetcher extends DataLogger
 
                 // Transform only once
                 $TRANSFORM_TIMES = 1;
-                $ImgTrans->TransformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, $TRANSFORM_TIMES);
+                $method_params = $ImgTrans->TransformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, $TRANSFORM_TIMES);
+
             } else {
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__, 1);
             }
@@ -300,8 +301,7 @@ class ImageFetcher extends DataLogger
             $ImageClassify = new ImageClassifier();
 
             return array(
-                'link' => $IMAGE_LINK,
-                'author' => $IMAGE_AUTHOR,
+                'message' => $ImageClassify->getPostMessage($IMAGE_LINK, $IMAGE_AUTHOR, $method_params),
                 'comment' => $ImageClassify->getComment($data),
                 'comment_photo' => $ImageClassify->getPhoto($data)
             );
