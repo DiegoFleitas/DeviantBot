@@ -15,15 +15,14 @@ use Intervention\Image\ImageManagerStatic as Image;
 
 //$FORCE_FILTER = 1; //FLIP
 //$FORCE_FILTER = 2; //ROTATE
-$FORCE_FILTER = 3; //LINES
+//$FORCE_FILTER = 3; //LINES
 //$FORCE_FILTER = 4; //BLUR
 //$FORCE_FILTER = 9; //COLORIZE
 //$FORCE_FILTER = 10; //OPACITY
 //$FORCE_FILTER = 11; //WIDEN
 //$FORCE_FILTER = 12; //LIMIT COLORS
 //$FORCE_FILTER = 13; //SHARPEN
-//$FORCE_FILTER = 14; //TEXT
-//$FORCE_FILTER = 14; //TEXT
+$FORCE_FILTER = 14; //TEXT
 //$FORCE_FILTER = 15; //CROP
 $image_path = 'test/filter_'.$FORCE_FILTER.'.jpg';
 

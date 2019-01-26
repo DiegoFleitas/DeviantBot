@@ -255,9 +255,9 @@ class ImageTransformer extends DataLogger
                 array_push($params, $posx);
                 array_push($params, $posy);
                 $img->text($random_string, $posx, $posy, function($font) {
-                    $font->file('C:\xampp\htdocs\FacebookBot\src\Bot\fonts\lucida');
+                    $font->file(__DIR__ .'\fonts\lucida');
                     $font->size(mt_rand(24 , 60));
-                    // TODO get random color instead of hacker green only
+                    // hacker green
                     $font->color('#20c20e');
                     $font->align('center');
                     $font->valign('top');
