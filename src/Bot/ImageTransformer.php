@@ -104,10 +104,10 @@ class ImageTransformer extends DataLogger
                     array_push($params, $posx1);
                     array_push($params, $posy1);
                     array_push($params, $posx2);
-                    array_push($params, $posx2);
+                    array_push($params, $posy2);
 
                     // draw a red line with 5 pixel width
-                    $img->line($posx1, $posy1, $posx2, $posx2, function ($draw) {
+                    $img->line($posx1, $posy1, $posx2, $posy2, function ($draw) {
                         $draw->color('#f00');
                         $draw->width(5);
                     });
@@ -124,6 +124,7 @@ class ImageTransformer extends DataLogger
 
             case 5:
 
+                $method = 'brightness';
                 if(!$forcefilter){
                     // 75% chance to reroll
                     if(mt_rand(0, 3)){
@@ -132,7 +133,6 @@ class ImageTransformer extends DataLogger
                 }
 
                 // 100 being the brightest
-                $method = 'brightness';
                 // $aux = mt_rand(-100, 100); //too dark, too bright
                 $aux = mt_rand(-50, 50);
                 array_push($params, $aux);
@@ -147,6 +147,7 @@ class ImageTransformer extends DataLogger
 
             case 7:
 
+                $method = 'contrast';
                 if(!$forcefilter){
                     // 75% chance to reroll
                     if(mt_rand(0, 3)){
@@ -154,7 +155,6 @@ class ImageTransformer extends DataLogger
                     }
                 }
 
-                $method = 'contrast';
                 // $aux = mt_rand(-100, 100); //too dark, too bright
                 $aux = mt_rand(-50, 50);
                 array_push($params, $aux);
@@ -182,6 +182,7 @@ class ImageTransformer extends DataLogger
 
             case 10:
 
+                $method = 'opacity';
                 if(!$forcefilter){
                     // 100% chance to reroll since Andi didn't like this filter
                     if(true){
@@ -190,7 +191,6 @@ class ImageTransformer extends DataLogger
                 }
 
                 // 100 being the full opacity
-                $method = 'opacity';
                 $aux = mt_rand(30, 50);
                 array_push($params, $aux);
                 $img->opacity($aux);
@@ -216,10 +216,9 @@ class ImageTransformer extends DataLogger
 
             case 13:
 
-                $i = 0;
+                $method = 'sharpen';
                 // fry twice, since 100 is the max
-                for($i; $i < 2; $i++){
-                    $method = 'sharpen';
+                for($i = 0; $i < 2; $i++){
                     $aux = 100;
                     array_push($params, $aux);
                     $img->sharpen($aux);
@@ -229,9 +228,7 @@ class ImageTransformer extends DataLogger
             case 14:
                 
                 $method = 'text';
-
 //                $random_string = $this->randomString();
-
                 $random_string = $this->randomCapital();
                 $random_string = strtoupper($random_string);
 
@@ -241,15 +238,12 @@ class ImageTransformer extends DataLogger
                 // upper left
 //                $posx = mt_rand(0 , 0);
 //                $posy = mt_rand(0 , 0);
-
                 // lower left
 //                $posx = mt_rand(0 , 0);
 //                $posy = mt_rand($height , $height);
-
                 // upper right
 //                $posx = mt_rand($width , $width);
 //                $posy = mt_rand(0 , 0);
-
                 // lower right
 //                $posx = mt_rand($width , $width);
 //                $posy = mt_rand($height , $height);
@@ -273,7 +267,7 @@ class ImageTransformer extends DataLogger
 
             case 15:
 
-
+                $method = 'crop';
                 if(!$forcefilter){
                     //TODO: 100% chance to reroll since I don't want to think of way to solve
                     // the problem of not picking uninteresting regions right now
@@ -281,8 +275,6 @@ class ImageTransformer extends DataLogger
                         $this->randomTransformation($img);
                     }
                 }
-
-                $method = 'crop';
 
                 $width = $img->getWidth();
                 $height = $img->getHeight();
@@ -294,11 +286,11 @@ class ImageTransformer extends DataLogger
 
                 array_push($params, $posx1);
                 array_push($params, $posy1);
-                array_push($params, $posx2);
+                array_push($params, $posy2);
                 array_push($params, $posx2);
 
                 // crop image
-                $img->crop($posx1, $posy1, $posx2, $posx2);
+                $img->crop($posx1, $posy1, $posy2, $posx2);
                 break;
 
             case 16: //pixelate

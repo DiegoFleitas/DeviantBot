@@ -187,7 +187,7 @@ class ImageClassifier
             return $image_path;
         }
 
-        return '';
+        return $PATH;
 
     }
 
