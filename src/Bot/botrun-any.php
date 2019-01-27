@@ -24,6 +24,7 @@ $IMAGE_PATH = 'test/transformed_image.jpg';
 
 $ImgFetcher = new ImageFetcher();
 $result = $ImgFetcher->FetchSaveTransform($fb, 'ANY', $IMAGE_PATH);
+$SAFETY = $result['safety'];
 $POST_TITLE = $result['post_title'];
 $POST_COMMENT = $result['post_comment'];
 $COMMENT = $result['comment'];
@@ -33,7 +34,7 @@ $COMMENT_PHOTO = $result['comment_photo'];
 if(isset($POST_TITLE)){
 
     // Make post with any random image
-    $FBhelper->newPost($fb, $IMAGE_PATH, $POST_TITLE, $POST_COMMENT, $COMMENT, $COMMENT_PHOTO);
+    $FBhelper->newPost($fb, $IMAGE_PATH, $POST_TITLE, $POST_COMMENT, $SAFETY, $COMMENT, $COMMENT_PHOTO);
 
 
 } else {

@@ -189,11 +189,13 @@ class FacebookHelper extends DataLogger
     /**
      * @param Facebook\Facebook $fb
      * @param string $IMAGE_PATH
-     * @param string $MESSAGE
+     * @param string $POST_TITLE
+     * @param string $POST_COMMENT
+     * @param string $SAFETY
      * @param string $COMMENT
      * @param string $COMMENT_PHOTO
      */
-    function newPost($fb, $IMAGE_PATH, $POST_TITLE, $POST_COMMENT, $COMMENT, $COMMENT_PHOTO){
+    function newPost($fb, $IMAGE_PATH, $POST_TITLE, $POST_COMMENT, $SAFETY, $COMMENT, $COMMENT_PHOTO){
 
         try {
 
@@ -207,10 +209,16 @@ class FacebookHelper extends DataLogger
 
             $response = $fb->post('/me/photos', $data);
 
-            // comment the author and original image
             $graphNode = $response->getGraphNode();
             $post_id = $graphNode->getField('id');
-            $this->postCommentToReference($fb, $post_id, $POST_COMMENT, 'test/original-image.jpg');
+            // if safe comment the author and original image
+            if($SAFETY == 'nonadult'){
+                $this->postCommentToReference($fb, $post_id, $POST_COMMENT, 'test/original-image.jpg');
+            } else {
+                // unsafe, no pic
+                $POST_COMMENT = '[NSFW] '.$POST_COMMENT;
+                $this->postCommentToReference($fb, $post_id, $POST_COMMENT );
+            }
 
             // if data has been passed post comment
             if(!empty($COMMENT) || !empty($COMMENT_PHOTO)){

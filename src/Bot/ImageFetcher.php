@@ -331,6 +331,7 @@ class ImageFetcher extends DataLogger
             $ImageClassify = new ImageClassifier();
 
             return array(
+                'safety' => $data->getSafety(),
                 'post_title' => $ImageClassify->getPostTitle($method_params),
                 'post_comment' => $ImageClassify->getPostComment($IMAGE_LINK, $IMAGE_AUTHOR),
                 'comment' => $ImageClassify->getComment($data),
