@@ -82,12 +82,12 @@ class CommandInterpreter extends DataLogger
     function identifyCommand($_COMMENT){
 
         $length = strlen($_COMMENT);
+        $comment = S::create($_COMMENT);
         if($length <= $this->getMaxlength() && $length > $this->getMinlength()){
             try {
                 $message = 'identifying [' . $_COMMENT . ']';
                 $this->logdata($message);
 
-                $comment = S::create($_COMMENT);
                 // let silly people use it too
                 $comment = $comment->trim();
                 $comment = $comment->toLowerCase();
@@ -142,7 +142,8 @@ class CommandInterpreter extends DataLogger
                 $this->logdata($data, 1);
             }
         } else {
-            $message = 'Too long/short. Just don\'t.';
+            $comment->truncate($this->getMaxlength(), '...');
+            $message = 'Too long/short. Comment: '.$comment;
             $this->logdata($message);
         }
 

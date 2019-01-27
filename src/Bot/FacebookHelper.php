@@ -11,6 +11,9 @@ require_once realpath(__DIR__ . '/../..') . '/vendor/autoload.php';
 require_once 'secrets.php';
 require_once 'ImageTransformer.php';
 require_once 'ImageFetcher.php';
+require_once 'CommandInterpreter.php';
+
+use Stringy\Stringy as S;
 
 class FacebookHelper extends DataLogger
 {
@@ -37,27 +40,28 @@ class FacebookHelper extends DataLogger
         }
     }
 
+
     /**
      * @param Facebook\Facebook $fb
      * @param string $POST_ID
      * @param bool $PHOTO_COMMENT
-     * @return mixed
+     * @param bool $COMMAND_COMMENT
      */
-    function getFirstComment($fb, $POST_ID, $PHOTO_COMMENT = false){
+    function getFirstComment($fb, $POST_ID, $PHOTO_COMMENT = false, $COMMAND_COMMENT = false){
 
-        if(!empty($POST_ID)){
+        if (!empty($POST_ID)) {
             try {
 
                 // after underscore
                 $POST_ID = substr($POST_ID, strpos($POST_ID, "_") + 1);
 
                 $imagequery = '';
-                if($PHOTO_COMMENT){
+                if ($PHOTO_COMMENT) {
                     $imagequery = '?fields=attachment';
                 }
 
                 // Returns a `Facebook\FacebookResponse` object
-                $response = $fb->get('/'.$POST_ID.'/comments'.$imagequery);
+                $response = $fb->get('/' . $POST_ID . '/comments' . $imagequery);
 
                 $graphEdge = $response->getGraphEdge();
                 var_dump($graphEdge->asArray());
@@ -65,41 +69,61 @@ class FacebookHelper extends DataLogger
                 // Iterate over all the GraphNode's returned from the edge
                 foreach ($graphEdge as $graphNode) {
 
-                    if($PHOTO_COMMENT){
-                        // first photo comment
-                        $attachment = $graphNode->getField('attachment');
-                        if(isset($attachment)){
-                            return $attachment->getField('url');
-                        }
-                    } else {
-                        // won't take commands from blacklisted users
-                        $from = $graphNode->getField('from');
-                        if(isset($from)){
-                            $name = $from->getField('name');
-                            if(isset($name)){
-                                $blacklist = array('DeviantBot 7245', 'ExampleApp');
-                                if(!in_array($name, $blacklist)){
-                                    $message = 'comment made by: '.$name;
-                                    $this->logdata($message);
-                                    return $graphNode->getField('message');
+                    // ignore blacklisted users
+                    $from = $graphNode->getField('from');
+                    if (isset($from)) {
+                        $name = $from->getField('name');
+                        if (isset($name)) {
+//                                $blacklist = array('DeviantBot 7245', 'ExampleApp');
+                            $blacklist = array();
+                            if (!in_array($name, $blacklist)) {
+
+                                $message = 'comment made by: ' . $name;
+                                $this->logdata($message);
+
+                                // resources
+                                if ($PHOTO_COMMENT) {
+                                    $attachment = $graphNode->getField('attachment');
+                                    if (isset($attachment)) {
+
+                                        // return first photo comment
+                                        return $attachment->getField('url');
+
+                                    }
+                                } elseif ($COMMAND_COMMENT) {
+
+                                    $text = $graphNode->getField('message');
+                                    $comment = S::create($text);
+                                    $CI = new CommandInterpreter();
+                                    $possiblecommand = $comment->containsAny($CI->getAvailableCommands());
+                                    if ($possiblecommand) {
+                                        return $text;
+                                    }
+
                                 } else {
-                                    $message = 'blacklisted user: '.$name;
-                                    $this->logdata($message);
+                                    // return first comment
+                                    return $graphNode->getField('message');
                                 }
+
+                            } else {
+                                $message = 'blacklisted user: ' . $name;
+                                $this->logdata($message);
                             }
                         }
                     }
+
+
                 }
 
                 $message = 'No comments found.';
-                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
+                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $message);
 
-            } catch(Facebook\Exceptions\FacebookResponseException $e) {
+            } catch (Facebook\Exceptions\FacebookResponseException $e) {
                 $message = 'Graph returned an error: ' . $e->getMessage();
-                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
-            } catch(Facebook\Exceptions\FacebookSDKException $e) {
+                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $message, 1);
+            } catch (Facebook\Exceptions\FacebookSDKException $e) {
                 $message = 'Facebook SDK returned an error: ' . $e->getMessage();
-                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
+                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $message, 1);
             }
         }
     }
@@ -267,6 +291,20 @@ class FacebookHelper extends DataLogger
 
         $raw_comment = $this->getFirstComment($fb, $post);
 
+        return $raw_comment;
+
+    }
+
+    /**
+     * @param Facebook\Facebook $fb
+     * @return mixed
+     */
+    function firstCommandFromLastPost($fb){
+
+        $post = $this->getLastPost($fb);
+
+        $raw_comment = $this->getFirstComment($fb, $post, false, true);
+
         //FILTER_SANITIZE_STRING: Strip tags, optionally strip or encode special characters.
         //FILTER_FLAG_STRIP_LOW: strips bytes in the input that have a numerical value <32, most notably null bytes and other control characters such as the ASCII bell.
         //FILTER_FLAG_STRIP_HIGH: strips bytes in the input that have a numerical value >127. In almost every encoding, those bytes represent non-ASCII characters such as ä, ¿, 堆 etc
@@ -274,6 +312,20 @@ class FacebookHelper extends DataLogger
             FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 
         return $safe_comment;
+
+    }
+
+    /**
+     * @param Facebook\Facebook $fb
+     * @return mixed
+     */
+    function firstPhotocommentFromLastPost($fb){
+
+        $post = $this->getLastPost($fb);
+
+        $raw_comment = $this->getFirstComment($fb, $post, true, false);
+
+        return $raw_comment;
 
     }
 

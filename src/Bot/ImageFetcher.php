@@ -271,7 +271,7 @@ class ImageFetcher extends DataLogger
 
 
         $FBhelper = new FacebookHelper();
-        $comment = $FBhelper->firstCommentFromLastPost($fb);
+        $comment = $FBhelper->firstCommandFromLastPost($fb);
 
         $CI = new CommandInterpreter();
         $result = $CI->identifyCommand($comment);
