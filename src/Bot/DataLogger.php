@@ -9,7 +9,7 @@
 class DataLogger
 {
     /**
-     * @param $data
+     * @param string $data
      * @param bool $die
      */
     public function logdata($data, $die = false){
@@ -18,4 +18,26 @@ class DataLogger
         file_put_contents('daily logs/'.date("Y-m-d").'_log.log', $timestamp.$data , FILE_APPEND);
         if($die) die();
     }
+
+    /**
+     * @param $data
+     * @param bool $die
+     */
+    public function logcommand($data, $die = false){
+        $timestamp = "\n[".date("Y/m/d h:i:sa").'] ';
+        // daily log files
+        file_put_contents('daily logs/'.date("Y-m-d").'_commands.log', $timestamp.$data , FILE_APPEND);
+        if($die) die();
+    }
+
+
+    /**
+     * @param string $type
+     * @param string $data
+     */
+    public function logxml($type, $data){
+        // daily log files
+        file_put_contents('test/test-response-'.strtolower($type).'.xml', $data);
+    }
+
 }

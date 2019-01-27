@@ -16,21 +16,16 @@ require_once 'DataLogger.php';
 $dt = new DataLogger();
 $dt->logdata('[ANY]');
 
-# v5 with default access token fallback
-$fb = new Facebook\Facebook([
-    'app_id' => $_APP_ID,
-    'app_secret' => $_APP_SECRET,
-    'default_graph_version' => 'v2.10',
-]);
-$fb->setDefaultAccessToken($_ACCESS_TOKEN_DEBUG);
-
+// Make post with any random image
+$FBhelper = new FacebookHelper();
+$fb = $FBhelper->init($_APP_ID, $_APP_SECRET, $_ACCESS_TOKEN_DEBUG);
 
 $IMAGE_PATH = 'test/transformed_image.jpg';
 $tags = array();
 $keywords = array();
 
 $ImgFetcher = new ImageFetcher();
-$result = $ImgFetcher->FetchSaveTransform('ANY', $IMAGE_PATH, $tags, $keywords);
+$result = $ImgFetcher->FetchSaveTransform($fb, 'ANY', $IMAGE_PATH);
 $MESSAGE = $result['message'];
 $COMMENT = $result['comment'];
 $COMMENT_PHOTO = $result['comment_photo'];
@@ -38,8 +33,7 @@ $COMMENT_PHOTO = $result['comment_photo'];
 //$MESSAGE should always be set by now
 if(isset($MESSAGE)){
 
-    // Make post with any random image
-    $FBhelper = new FacebookHelper();
+
     $FBhelper->newPost($fb, $IMAGE_PATH, $MESSAGE, $COMMENT, $COMMENT_PHOTO);
 
 

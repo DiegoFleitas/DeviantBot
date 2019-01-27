@@ -67,25 +67,22 @@ require_once 'ImageFetcher.php';
 require_once 'FacebookHelper.php';
 require_once 'DataLogger.php';
 
+// TODO: A) Being able to comment a DeviantArt link and get it transformed randomly in the comments.
+// TODO: B) Being able to comment keywords / tags that will be used when the bot is searching the for an image
+// TODO: C) Being able to transform randomly any image uploaded as comment
 
 $dt = new DataLogger();
 $dt->logdata('[POPULAR]');
 
-# v5 with default access token fallback
-$fb = new Facebook\Facebook([
-    'app_id' => $_APP_ID,
-    'app_secret' => $_APP_SECRET,
-    'default_graph_version' => 'v2.10',
-]);
-$fb->setDefaultAccessToken($_ACCESS_TOKEN_DEBUG);
+// Make post with any random image
+$FBhelper = new FacebookHelper();
+$fb = $FBhelper->init($_APP_ID, $_APP_SECRET, $_ACCESS_TOKEN_DEBUG);
 
 
 $IMAGE_PATH = 'test/transformed_image.jpg';
-$tags = array();
-$keywords = array();
 
 $ImgFetcher = new ImageFetcher();
-$result = $ImgFetcher->FetchSaveTransform('POPULAR', $IMAGE_PATH, $tags, $keywords);
+$result = $ImgFetcher->FetchSaveTransform($fb, 'POPULAR', $IMAGE_PATH);
 $MESSAGE = $result['message'];
 $COMMENT = $result['comment'];
 $COMMENT_PHOTO = $result['comment_photo'];
@@ -94,7 +91,6 @@ $COMMENT_PHOTO = $result['comment_photo'];
 if(isset($MESSAGE)){
 
     // Make post with any random image
-    $FBhelper = new FacebookHelper();
     $FBhelper->newPost($fb, $IMAGE_PATH, $MESSAGE, $COMMENT, $COMMENT_PHOTO);
 
 

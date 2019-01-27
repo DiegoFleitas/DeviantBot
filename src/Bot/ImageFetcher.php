@@ -11,6 +11,7 @@ require_once 'DeviantImage.php';
 require_once 'ImageTransformer.php';
 require_once 'DataLogger.php';
 require_once 'ImageClassifier.php';
+require_once 'CommandInterpreter.php';
 
 use Intervention\Image\ImageManagerStatic as Image;
 
@@ -41,6 +42,7 @@ class ImageFetcher extends DataLogger
         }
 
         $params = '';
+        //TODO add searching by title
         foreach($keywords as $keyword){
             $params .= $keyword.' ';
         }
@@ -54,6 +56,10 @@ class ImageFetcher extends DataLogger
         }
 
         $url_rss .= rawurlencode($params).'&=';
+
+        // logging
+        $message = 'fetching [' . $url_rss . ']';
+        $this->logcommand($message);
 
         return $url_rss;
     }
@@ -142,6 +148,8 @@ class ImageFetcher extends DataLogger
             try {
 
                 $links = $this->parseXMLResponse($response);
+
+                $this->logxml($type, $response);
 
                 if(!empty($links)){
                     return $links;
@@ -249,17 +257,34 @@ class ImageFetcher extends DataLogger
 
     }
 
+
     /**
+     * @param $fb \Facebook\Facebook
      * @param string $TYPE
      * @param string $IMAGE_PATH
-     * @param array $tags
-     * @param array $keywords
      * @return array
      */
-    function FetchSaveTransform($TYPE, $IMAGE_PATH, $tags, $keywords){
+    function FetchSaveTransform($fb, $TYPE, $IMAGE_PATH){
+
+
+        $FBhelper = new FacebookHelper();
+        $comment = $FBhelper->firstCommentFromLastPost($fb);
+
+        $CI = new CommandInterpreter();
+        $result = $CI->identifyCommand($comment);
+
+        // Use commands given in comment
+        if($result){
+            if($result['command'] == 'keyword'){
+                $keywords = $result['params'];
+            } elseif($result['command'] == 'tag'){
+                $tags = $result['params'];
+            }
+        }
 
         $ImgFetcher = new ImageFetcher();
         $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, $tags, $keywords);
+
 
         try{
 
