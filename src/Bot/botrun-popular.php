@@ -68,7 +68,6 @@ require_once 'FacebookHelper.php';
 require_once 'DataLogger.php';
 
 // TODO: A) Being able to comment a DeviantArt link and get it transformed randomly in the comments.
-// TODO: B) Being able to comment keywords / tags that will be used when the bot is searching the for an image
 // TODO: C) Being able to transform randomly any image uploaded as comment
 
 $dt = new DataLogger();

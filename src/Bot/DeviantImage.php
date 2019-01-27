@@ -20,7 +20,6 @@ class DeviantImage
     private $product;
     private $tags;
     private $copyright;
-//    TODO: decide which format / resolution to upload and if i should convert the images
     private $width;
     private $height;
     private $imagetype;
