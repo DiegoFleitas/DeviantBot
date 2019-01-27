@@ -53,7 +53,7 @@ class FacebookHelper extends DataLogger
             try {
 
                 // after underscore
-                $POST_ID = substr($POST_ID, strpos($POST_ID, "_") + 1);
+//                $POST_ID = substr($POST_ID, strpos($POST_ID, "_") + 1);
 
                 $imagequery = '';
                 if ($PHOTO_COMMENT) {
@@ -74,8 +74,8 @@ class FacebookHelper extends DataLogger
                     if (isset($from)) {
                         $name = $from->getField('name');
                         if (isset($name)) {
-                            $blacklist = array('DeviantBot 7245', 'ExampleApp');
-//                            $blacklist = array();
+//                            $blacklist = array('DeviantBot 7245', 'ExampleApp');
+                            $blacklist = array();
                             if (!in_array($name, $blacklist)) {
 
                                 $message = 'comment made by: ' . $name;
@@ -87,7 +87,11 @@ class FacebookHelper extends DataLogger
                                     if (isset($attachment)) {
 
                                         // return first photo comment
-                                        return $attachment->getField('url');
+                                        $photo = $attachment->getField('url');
+                                        return array(
+                                            'who' => $name,
+                                            'photo' => $photo
+                                        );
 
                                     }
                                 } elseif ($COMMAND_COMMENT) {
@@ -97,12 +101,19 @@ class FacebookHelper extends DataLogger
                                     $CI = new CommandInterpreter();
                                     $possiblecommand = $comment->containsAny($CI->getAvailableCommands());
                                     if ($possiblecommand) {
-                                        return $text;
+                                        return array(
+                                            'who' => $name,
+                                            'text' => $text
+                                        );
                                     }
 
                                 } else {
                                     // return first comment
-                                    return $graphNode->getField('message');
+                                    $text = $graphNode->getField('message');
+                                    return array(
+                                        'who' => $name,
+                                        'text' => $text
+                                    );
                                 }
 
                             } else {
@@ -295,29 +306,30 @@ class FacebookHelper extends DataLogger
 
         $post = $this->getLastPost($fb);
 
-        $raw_comment = $this->getFirstComment($fb, $post);
+        $res = $this->getFirstComment($fb, $post);
 
-        return $raw_comment;
+        return $res;
 
     }
 
     /**
      * @param Facebook\Facebook $fb
-     * @return mixed
+     * @return array
      */
     function firstCommandFromLastPost($fb){
 
         $post = $this->getLastPost($fb);
 
-        $raw_comment = $this->getFirstComment($fb, $post, false, true);
+        $res = $this->getFirstComment($fb, $post, false, true);
 
         //FILTER_SANITIZE_STRING: Strip tags, optionally strip or encode special characters.
         //FILTER_FLAG_STRIP_LOW: strips bytes in the input that have a numerical value <32, most notably null bytes and other control characters such as the ASCII bell.
         //FILTER_FLAG_STRIP_HIGH: strips bytes in the input that have a numerical value >127. In almost every encoding, those bytes represent non-ASCII characters such as ä, ¿, 堆 etc
-        $safe_comment = filter_var($raw_comment, FILTER_SANITIZE_STRING,
+        $safe_comment = filter_var($res['text'], FILTER_SANITIZE_STRING,
             FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 
-        return $safe_comment;
+        $res['text'] = $safe_comment;
+        return $res;
 
     }
 

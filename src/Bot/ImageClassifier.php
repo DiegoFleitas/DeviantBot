@@ -228,12 +228,14 @@ class ImageClassifier
 
     /**
      * @param string $params
+     * @param array $comment_info
      * @return string
      */
-    function getPostTitle($params){
+    function getPostTitle($params, $comment_info){
         return 'Beep Boop I found this, but I think it got corrupted along the way.
                 
-                ~'.$params.'~';
+                ~'.$params.'~
+                Command: '.$comment_info['text'].' by '.$comment_info['who'];
     }
 
     /**

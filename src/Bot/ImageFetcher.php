@@ -275,10 +275,10 @@ class ImageFetcher extends DataLogger
 
 
         $FBhelper = new FacebookHelper();
-        $comment = $FBhelper->firstCommandFromLastPost($fb);
+        $comment_info = $FBhelper->firstCommandFromLastPost($fb);
 
         $CI = new CommandInterpreter();
-        $result = $CI->identifyCommand($comment);
+        $result = $CI->identifyCommand($comment_info['text']);
 
         $tags = array();
         $keywords = array();
@@ -336,7 +336,7 @@ class ImageFetcher extends DataLogger
 
             return array(
                 'safety' => $data->getSafety(),
-                'post_title' => $ImageClassify->getPostTitle($method_params),
+                'post_title' => $ImageClassify->getPostTitle($method_params, $comment_info),
                 'post_comment' => $ImageClassify->getPostComment($IMAGE_LINK, $IMAGE_AUTHOR),
                 'comment' => $ImageClassify->getComment($data),
                 'comment_photo' => $ImageClassify->getPhoto($data)
