@@ -52,8 +52,11 @@ class ImageFetcher extends DataLogger
         }
 
         // Exclude literature category since most are just text
-        $lit = '-in:literature ';
-        $url_rss .= rawurlencode($lit);
+        // Not compatible with meta:all tag
+        if($dailydeviations || $popular){
+            $lit = '-in:literature ';
+            $url_rss .= rawurlencode($lit);
+        }
 
 
         if(!$popular){
@@ -199,9 +202,10 @@ class ImageFetcher extends DataLogger
         if(!empty($links)){
             $random_index = mt_rand(0, count($links) - 1);
             return $links[$random_index];
+        } else {
+            $message = 'no links found';
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
-
-        $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__, 1);
 
     }
 
