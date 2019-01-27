@@ -51,6 +51,11 @@ class ImageFetcher extends DataLogger
             $params .= 'tag:'.$tag.' ';
         }
 
+        // Exclude literature category since most are just text
+        $lit = '-in:literature ';
+        $url_rss .= rawurlencode($lit);
+
+
         if(!$popular){
             $params .= 'sort:time ';
         }
@@ -59,7 +64,7 @@ class ImageFetcher extends DataLogger
 
         // logging
         $message = 'fetching [' . $url_rss . ']';
-        $this->logcommand($message);
+        $this->logdata($message);
 
         return $url_rss;
     }
@@ -188,8 +193,6 @@ class ImageFetcher extends DataLogger
      */
     function getRandom($TYPE, $tags, $keywords){
 
-        // TODO: check if tags and keywords are enabled on Daily
-
         $ImgFetch = new ImageFetcher();
         $links = $ImgFetch->getImagelinksFromRSS($TYPE, $tags, $keywords);
 
@@ -273,6 +276,8 @@ class ImageFetcher extends DataLogger
         $CI = new CommandInterpreter();
         $result = $CI->identifyCommand($comment);
 
+        $tags = array();
+        $keywords = array();
         // Use commands given in comment
         if($result){
             if($result['command'] == 'keyword'){

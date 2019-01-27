@@ -85,7 +85,7 @@ class CommandInterpreter extends DataLogger
         if($length <= $this->getMaxlength() && $length > $this->getMinlength()){
             try {
                 $message = 'identifying [' . $_COMMENT . ']';
-                $this->logcommand($message);
+                $this->logdata($message);
 
                 $comment = S::create($_COMMENT);
                 // let silly people use it too
@@ -107,7 +107,7 @@ class CommandInterpreter extends DataLogger
                             if($result['success']){
 
                                 $message = 'identified command [' . $result['command'] . '] params [' .  implode( ' ', $result['params']) . ']';
-                                $this->logcommand($message);
+                                $this->logdata($message);
 
                                 return array(
                                     'command' => $result['command'],
@@ -116,34 +116,34 @@ class CommandInterpreter extends DataLogger
 
                             } else {
                                 $message = 'invalid command. '.$result['reason'];
-                                $this->logcommand($message);
+                                $this->logdata($message);
                             }
 
 
                         } else {
                             $message = 'command does not exist';
-                            $this->logcommand($message);
+                            $this->logdata($message);
                         }
                     } else {
                         $message = 'command unrecognized';
-                        $this->logcommand($message);
+                        $this->logdata($message);
                     }
 
                 } else {
                     // comment contained characters that are not addmited
                     $message = 'command is not well formatted';
-                    $this->logcommand($message);
+                    $this->logdata($message);
                 }
 
                 return false;
 
             } catch (Exception $e) {
                 $data = $e->getMessage();
-                $this->logcommand($data, 1);
+                $this->logdata($data, 1);
             }
         } else {
             $message = 'Too long/short. Just don\'t.';
-            $this->logcommand($message);
+            $this->logdata($message);
         }
 
     }
@@ -164,7 +164,7 @@ class CommandInterpreter extends DataLogger
             return false;
         } catch (Exception $e) {
             $data = $e->getMessage();
-            $this->logcommand($data, 1);
+            $this->logdata($data, 1);
         }
 
     }
@@ -223,7 +223,7 @@ class CommandInterpreter extends DataLogger
             return $result;
         } catch (Exception $e) {
             $data = $e->getMessage();
-            $this->logcommand($data, 1);
+            $this->logdata($data, 1);
         }
 
     }

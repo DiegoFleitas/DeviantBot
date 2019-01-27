@@ -79,7 +79,12 @@ class FacebookHelper extends DataLogger
                             if(isset($name)){
                                 $blacklist = array('DeviantBot 7245', 'ExampleApp');
                                 if(!in_array($name, $blacklist)){
+                                    $message = 'comment made by: '.$name;
+                                    $this->logdata($message);
                                     return $graphNode->getField('message');
+                                } else {
+                                    $message = 'blacklisted user: '.$name;
+                                    $this->logdata($message);
                                 }
                             }
                         }
