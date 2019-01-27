@@ -23,8 +23,6 @@ $fb = $FBhelper->init($_APP_ID, $_APP_SECRET, $_ACCESS_TOKEN_DEBUG);
 
 
 $IMAGE_PATH = 'test/transformed_image.jpg';
-$tags = array();
-$keywords = array();
 
 $ImgFetcher = new ImageFetcher();
 $result = $ImgFetcher->FetchSaveTransform($fb, 'DAILY', $IMAGE_PATH);
