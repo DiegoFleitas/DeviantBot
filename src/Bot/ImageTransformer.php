@@ -267,7 +267,7 @@ class ImageTransformer extends DataLogger
 
                 $method = 'crop';
                 if(!$forcefilter){
-                    //TODO: 100% chance to reroll since I don't want to think of way to solve
+                    //FIXME: 100% chance to reroll since I don't want to think of way to solve
                     // the problem of not picking uninteresting regions right now
                     $this->randomTransformation($img);
                 }

@@ -31,7 +31,19 @@ class ImageClassifier
             'sansxoc',
         );
 
+        //FIXME this should be done better
         $terrible = array(
+
+            //UNSAFE
+            'boobs',
+            'breasts',
+            'tits',
+            'bigboobs',
+            'bigbreasts',
+            'hugeboobs',
+            'hugebreasts',
+            'largeboobs',
+            'largebreasts',
 
             //MLP
             'mlp',
@@ -232,10 +244,16 @@ class ImageClassifier
      * @return string
      */
     function getPostTitle($params, $comment_info){
-        return 'Beep Boop I found this, but I think it got corrupted along the way.
-                
-                ~'.$params.'~
-                Command: '.$comment_info['text'].' by '.$comment_info['who'];
+        if(!empty($comment_info['text']) && !empty($comment_info['who'])){
+            return 'Beep Boop I found this, but I think it got corrupted along the way.
+                    
+                    ~'.$params.'~
+                    Command: '.$comment_info['text'].' by '.$comment_info['who'];
+        } else {
+            return 'Beep Boop I found this, but I think it got corrupted along the way.
+                    
+                    ~'.$params.'~';
+        }
     }
 
     /**

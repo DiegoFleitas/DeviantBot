@@ -53,7 +53,7 @@ class FacebookHelper extends DataLogger
             try {
 
                 // after underscore
-//                $POST_ID = substr($POST_ID, strpos($POST_ID, "_") + 1);
+                $POST_ID = substr($POST_ID, strpos($POST_ID, "_") + 1);
 
                 $imagequery = '';
                 if ($PHOTO_COMMENT) {
@@ -81,6 +81,10 @@ class FacebookHelper extends DataLogger
                                 $message = 'comment made by: ' . $name;
                                 $this->logdata($message);
 
+                                $text = $graphNode->getField('message');
+                                $text = strtolower($text);
+                                $comment = S::create($text);
+
                                 // resources
                                 if ($PHOTO_COMMENT) {
                                     $attachment = $graphNode->getField('attachment');
@@ -96,8 +100,7 @@ class FacebookHelper extends DataLogger
                                     }
                                 } elseif ($COMMAND_COMMENT) {
 
-                                    $text = $graphNode->getField('message');
-                                    $comment = S::create($text);
+
                                     $CI = new CommandInterpreter();
                                     $possiblecommand = $comment->containsAny($CI->getAvailableCommands());
                                     if ($possiblecommand) {
@@ -109,7 +112,6 @@ class FacebookHelper extends DataLogger
 
                                 } else {
                                     // return first comment
-                                    $text = $graphNode->getField('message');
                                     return array(
                                         'who' => $name,
                                         'text' => $text
@@ -117,8 +119,8 @@ class FacebookHelper extends DataLogger
                                 }
 
                             } else {
-                                $message = 'blacklisted user: ' . $name;
-                                $this->logdata($message);
+                                $logmessage = 'blacklisted user: ' . $name;
+                                $this->logdata($logmessage);
                             }
                         }
                     }
@@ -126,15 +128,15 @@ class FacebookHelper extends DataLogger
 
                 }
 
-                $message = 'No comments found.';
-                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $message);
+                $logmessage = 'No comments found.';
+                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage);
 
             } catch (Facebook\Exceptions\FacebookResponseException $e) {
-                $message = 'Graph returned an error: ' . $e->getMessage();
-                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $message, 1);
+                $logmessage = 'Graph returned an error: ' . $e->getMessage();
+                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage, 1);
             } catch (Facebook\Exceptions\FacebookSDKException $e) {
-                $message = 'Facebook SDK returned an error: ' . $e->getMessage();
-                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $message, 1);
+                $logmessage = 'Facebook SDK returned an error: ' . $e->getMessage();
+                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage, 1);
             }
         }
     }
@@ -328,7 +330,7 @@ class FacebookHelper extends DataLogger
         $safe_comment = filter_var($res['text'], FILTER_SANITIZE_STRING,
             FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 
-        $res['text'] = $safe_comment;
+        $res['text'] = strtolower($safe_comment);
         return $res;
 
     }
