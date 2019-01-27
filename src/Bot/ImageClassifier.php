@@ -227,16 +227,22 @@ class ImageClassifier
 
 
     /**
-     * @param string $IMAGE_LINK
-     * @param string $IMAGE_AUTHOR
      * @param string $params
      * @return string
      */
-    function getPostMessage($IMAGE_LINK, $IMAGE_AUTHOR, $params){
+    function getPostTitle($params){
         return 'Beep Boop I found this, but I think it got corrupted along the way.
                 
-                ~'.$params.'~
-                Original image: 
+                ~'.$params.'~';
+    }
+
+    /**
+     * @param string $IMAGE_LINK
+     * @param string $IMAGE_AUTHOR
+     * @return string
+     */
+    function getPostComment($IMAGE_LINK, $IMAGE_AUTHOR){
+        return 'Original image: 
                 '.$IMAGE_LINK.'
                 author: '.$IMAGE_AUTHOR;
     }

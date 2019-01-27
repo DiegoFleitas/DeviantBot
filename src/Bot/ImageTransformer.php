@@ -185,9 +185,7 @@ class ImageTransformer extends DataLogger
                 $method = 'opacity';
                 if(!$forcefilter){
                     // 100% chance to reroll since Andi didn't like this filter
-                    if(true){
-                        $this->randomTransformation($img);
-                    }
+                    $this->randomTransformation($img);
                 }
 
                 // 100 being the full opacity
@@ -271,9 +269,7 @@ class ImageTransformer extends DataLogger
                 if(!$forcefilter){
                     //TODO: 100% chance to reroll since I don't want to think of way to solve
                     // the problem of not picking uninteresting regions right now
-                    if(true){
-                        $this->randomTransformation($img);
-                    }
+                    $this->randomTransformation($img);
                 }
 
                 $width = $img->getWidth();

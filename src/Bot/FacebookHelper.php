@@ -74,8 +74,8 @@ class FacebookHelper extends DataLogger
                     if (isset($from)) {
                         $name = $from->getField('name');
                         if (isset($name)) {
-//                                $blacklist = array('DeviantBot 7245', 'ExampleApp');
-                            $blacklist = array();
+                            $blacklist = array('DeviantBot 7245', 'ExampleApp');
+//                            $blacklist = array();
                             if (!in_array($name, $blacklist)) {
 
                                 $message = 'comment made by: ' . $name;
@@ -136,11 +136,6 @@ class FacebookHelper extends DataLogger
      */
     function postCommentToReference($fb, $ID_REFERENCE, $COMMENT, $COMMENT_PHOTO){
 
-//        $POST_ID = '276699869694101';
-//        $COMMENT_ID = '276699869694101_276797539684334';
-//
-//        $MESSAGE = 'maybe.';
-
         try {
 
             $data = array ();
@@ -198,7 +193,7 @@ class FacebookHelper extends DataLogger
      * @param string $COMMENT
      * @param string $COMMENT_PHOTO
      */
-    function newPost($fb, $IMAGE_PATH, $MESSAGE, $COMMENT, $COMMENT_PHOTO){
+    function newPost($fb, $IMAGE_PATH, $POST_TITLE, $POST_COMMENT, $COMMENT, $COMMENT_PHOTO){
 
         try {
 
@@ -207,16 +202,19 @@ class FacebookHelper extends DataLogger
             # fileToUpload works with remote and local images
             $data = array(
                 'source' => $fbfile,
-                'message' => $MESSAGE
+                'message' => $POST_TITLE
             );
 
             $response = $fb->post('/me/photos', $data);
 
+            // comment the author and original image
+            $graphNode = $response->getGraphNode();
+            $post_id = $graphNode->getField('id');
+            $this->postCommentToReference($fb, $post_id, $POST_COMMENT, 'test/original-image.jpg');
+
             // if data has been passed post comment
             if(!empty($COMMENT) || !empty($COMMENT_PHOTO)){
 
-                $graphNode = $response->getGraphNode();
-                $post_id = $graphNode->getField('id');
                 $this->postCommentToReference($fb, $post_id, $COMMENT, $COMMENT_PHOTO);
             }
 

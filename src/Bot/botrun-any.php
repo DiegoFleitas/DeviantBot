@@ -24,15 +24,16 @@ $IMAGE_PATH = 'test/transformed_image.jpg';
 
 $ImgFetcher = new ImageFetcher();
 $result = $ImgFetcher->FetchSaveTransform($fb, 'ANY', $IMAGE_PATH);
-$MESSAGE = $result['message'];
+$POST_TITLE = $result['post_title'];
+$POST_COMMENT = $result['post_comment'];
 $COMMENT = $result['comment'];
 $COMMENT_PHOTO = $result['comment_photo'];
 
 //$MESSAGE should always be set by now
-if(isset($MESSAGE)){
+if(isset($POST_TITLE)){
 
-
-    $FBhelper->newPost($fb, $IMAGE_PATH, $MESSAGE, $COMMENT, $COMMENT_PHOTO);
+    // Make post with any random image
+    $FBhelper->newPost($fb, $IMAGE_PATH, $POST_TITLE, $POST_COMMENT, $COMMENT, $COMMENT_PHOTO);
 
 
 } else {
