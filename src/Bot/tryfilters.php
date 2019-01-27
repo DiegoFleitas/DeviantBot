@@ -22,12 +22,14 @@ use Intervention\Image\ImageManagerStatic as Image;
 //$FORCE_FILTER = 11; //WIDEN
 //$FORCE_FILTER = 12; //LIMIT COLORS
 //$FORCE_FILTER = 13; //SHARPEN
-$FORCE_FILTER = 14; //TEXT
+//$FORCE_FILTER = 14; //TEXT
 //$FORCE_FILTER = 15; //CROP
+$FORCE_FILTER = 16; //FRY
 $image_path = 'test/filter_'.$FORCE_FILTER.'.jpg';
 
 // REMOTE
 $IMAGE_LINK = 'https://scontent.fmvd3-1.fna.fbcdn.net/v/t1.0-9/50085482_2238280363055084_5496124642005352448_o.jpg?_nc_cat=108&_nc_ht=scontent.fmvd3-1.fna&oh=1d7d19f12b024de8f3280079caba4fd1&oe=5CB40E70';
+$IMAGE_LINK = 'https://cdn.discordapp.com/attachments/438590624162250754/539103298339340293/what_the_fuck4.jpg';
 $ImgFetcher = new ImageFetcher();
 $ImgFetcher->saveImageLocally($IMAGE_LINK, $image_path);
 

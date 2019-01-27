@@ -55,7 +55,7 @@ class ImageTransformer extends DataLogger
         $params = array();
 
         if(!$forcefilter){
-            $do = mt_rand(1, 16);
+            $do = mt_rand(1, 17);
 
             // if unsafe, pixelate
             if($safety !== 'nonadult'){
@@ -293,7 +293,25 @@ class ImageTransformer extends DataLogger
                 $img->crop($posx1, $posy1, $posy2, $posx2);
                 break;
 
-            case 16: //pixelate
+            case 16:
+
+                //FIXME this should be a filter()
+                //(brightness + invert + sharpen)
+                $method = 'demonic fry';
+
+                // 100 being the brightest
+                 $aux = mt_rand(-100, -50); //darker
+                array_push($params, $aux);
+                $img->brightness($aux);
+
+                $img->invert();
+
+                $aux = 100;
+                array_push($params, $aux);
+                $img->sharpen($aux);
+                break;
+
+            case 17: //pixelate
             default :
                 $method = 'pixelate';
                 $aux = 20;
