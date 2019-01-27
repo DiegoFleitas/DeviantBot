@@ -14,7 +14,7 @@ class CommandInterpreter extends DataLogger
 
     // inclusive
     protected $maxlength = 80;
-    protected $minlength = 80;
+    protected $minlength = 5;
     protected $maxwords = 4;
     protected $minwords = 2;
     protected $separator = ' ';
