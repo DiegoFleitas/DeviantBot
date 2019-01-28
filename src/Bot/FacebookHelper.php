@@ -103,7 +103,7 @@ class FacebookHelper extends DataLogger
 
 
                                     $CI = new CommandInterpreter();
-                                    $possiblecommand = $comment->containsAny($CI->getAvailableCommands());
+                                    $possiblecommand = $comment->startsWithAny($CI->getAvailableCommands());
                                     $length = strlen($comment);
                                     if ($possiblecommand && $length <= $CI->getMaxlength() && $length >= $CI->getMinlength()) {
                                         return array(

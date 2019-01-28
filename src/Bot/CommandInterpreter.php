@@ -89,7 +89,6 @@ class CommandInterpreter extends DataLogger
 
                 // let silly people use it too
                 $comment = $comment->trim();
-                $comment = $comment->toLowerCase();
                 $comment = $comment->collapseWhitespace();
                 // Might need to change this to accept $comment->isAlphanumeric() too in the future
                 $non_space = str_replace(' ', '', $comment);
