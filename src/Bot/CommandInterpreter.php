@@ -74,10 +74,9 @@ class CommandInterpreter extends DataLogger
     }
 
 
-
     /**
-     * @param string $COMMENT
-     * @return bool
+     * @param string $_COMMENT
+     * @return array
      */
     function identifyCommand($_COMMENT){
 
@@ -111,7 +110,7 @@ class CommandInterpreter extends DataLogger
 
                                 return array(
                                     'command' => $result['command'],
-                                    'params' => $result['params']
+                                    'params' => $result['params'],
                                 );
 
                             } else {
@@ -135,7 +134,11 @@ class CommandInterpreter extends DataLogger
                     $this->logdata($message);
                 }
 
-                return false;
+                return array(
+                    'command' => $result['command'],
+                    'params' => $result['params'],
+                    'output' => $message
+                );
 
             } catch (Exception $e) {
                 $data = $e->getMessage();

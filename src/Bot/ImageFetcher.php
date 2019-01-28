@@ -203,8 +203,9 @@ class ImageFetcher extends DataLogger
             $random_index = mt_rand(0, count($links) - 1);
             return $links[$random_index];
         } else {
-            $message = 'no links found';
-            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
+            $message = 'no links found, retrying with no commands';
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
+            return false;
         }
 
     }
@@ -284,16 +285,31 @@ class ImageFetcher extends DataLogger
         $keywords = array();
         // Use commands given in comment
         if($result){
-            if($result['command'] == 'keyword'){
-                $keywords = $result['params'];
-            } elseif($result['command'] == 'tag'){
-                $tags = $result['params'];
+
+            // invalid
+            if($result['output']){
+                $inform = $result['output'];
+            } else {
+                if($result['command'] == 'keyword'){
+                    $keywords = $result['params'];
+                } elseif($result['command'] == 'tag'){
+                    $tags = $result['params'];
+                }
             }
+
         }
 
         $ImgFetcher = new ImageFetcher();
         $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, $tags, $keywords);
-
+        // search failed
+        if(!$IMAGE_LINK){
+            // if failed search had tag or keyword
+            if(isset($tags) || isset($keywords)){
+                // will search randomly on its own
+                $inform = 'Valid command, but found no results.';
+                $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, [], []);
+            }
+        }
 
         try{
 
@@ -336,7 +352,7 @@ class ImageFetcher extends DataLogger
 
             return array(
                 'safety' => $data->getSafety(),
-                'post_title' => $ImageClassify->getPostTitle($method_params, $comment_info),
+                'post_title' => $ImageClassify->getPostTitle($method_params, $comment_info, $inform),
                 'post_comment' => $ImageClassify->getPostComment($IMAGE_LINK, $IMAGE_AUTHOR),
                 'comment' => $ImageClassify->getComment($data),
                 'comment_photo' => $ImageClassify->getPhoto($data)

@@ -243,8 +243,13 @@ class ImageClassifier
      * @param array $comment_info
      * @return string
      */
-    function getPostTitle($params, $comment_info){
-        if(!empty($comment_info['text']) && !empty($comment_info['who'])){
+    function getPostTitle($params, $comment_info, $inform){
+        if(!empty($inform)){
+            return 'Beep Boop I found this, but I think it got corrupted along the way.
+                    
+                    ~'.$params.'~
+                    Command: '.$comment_info['text'].' => '.$inform;
+        }elseif(!empty($comment_info['text']) && !empty($comment_info['who'])){
             return 'Beep Boop I found this, but I think it got corrupted along the way.
                     
                     ~'.$params.'~
