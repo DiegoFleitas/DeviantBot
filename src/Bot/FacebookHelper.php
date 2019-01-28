@@ -53,6 +53,7 @@ class FacebookHelper extends DataLogger
             try {
 
                 // after underscore
+                // TODO: whats the deal with this
                 $POST_ID = substr($POST_ID, strpos($POST_ID, "_") + 1);
 
                 $imagequery = '';
@@ -103,7 +104,8 @@ class FacebookHelper extends DataLogger
 
                                     $CI = new CommandInterpreter();
                                     $possiblecommand = $comment->containsAny($CI->getAvailableCommands());
-                                    if ($possiblecommand) {
+                                    $length = strlen($comment);
+                                    if ($possiblecommand && $length <= $CI->getMaxlength() && $length >= $CI->getMinlength()) {
                                         return array(
                                             'who' => $name,
                                             'text' => $text
