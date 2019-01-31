@@ -124,7 +124,7 @@ class ImageFetcher extends DataLogger
 
         $response = $this->getRawDeviantArtData($CURLOPT_URL, "JSON");
         if($response){
-            return new DeviantImage($response);
+            return new DeviantImage($response, $CURLOPT_URL);
         }
     }
 
@@ -150,23 +150,30 @@ class ImageFetcher extends DataLogger
             $CURLOPT_URL = $this->buildRSSURL( false, false, $tags, $keywords);
         }
 
-        $response = $this->getRawDeviantArtData($CURLOPT_URL, 'RSS');
-        if($response){
-            //Process XML
-            try {
+        if(!empty($CURLOPT_URL)){
+            $response = $this->getRawDeviantArtData($CURLOPT_URL, 'RSS');
+            if($response){
+                //Process XML
+                try {
 
-                $links = $this->parseXMLResponse($response);
+                    $this->logxml($type, $response);
 
-                $this->logxml($type, $response);
+                    /** @var  $links array */
+                    $links = $this->parseXMLResponse($response);
 
-                if(!empty($links)){
-                    return $links;
+
+                    if(!empty($links)){
+                        return $links;
+                    }
+
+                } catch (Exception $e){
+                    $message = $e->getMessage();
+                    $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
                 }
-
-            } catch (Exception $e){
-                $message = $e->getMessage();
-                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
+        } else {
+            $message = '$CURLOPT_URL empty';
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message,1 );
         }
 
 
@@ -180,9 +187,20 @@ class ImageFetcher extends DataLogger
     function parseXMLResponse($response){
         $xml = new SimpleXMLElement($response);
         $links_array = array();
+        /** @var  $item SimpleXMLElement */
         foreach($xml->xpath('channel/item') as $item){
-            // Asumes every item has link
-            array_push($links_array,  (string)$item->link) ;
+            if (!empty($item->link)) {
+                array_push($links_array,  (string)$item->link) ;
+            } else {
+                if (!empty($item)) {
+                    $title = $item->title;
+                    $message = $title.' has no links';
+                    $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
+                } else {
+                    $message = 'weird xml';
+                    $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
+                }
+            }
         }
         return $links_array;
     }
@@ -315,6 +333,7 @@ class ImageFetcher extends DataLogger
 
             if(!empty($IMAGE_LINK)){
 
+                /** @var DeviantImage $data */
                 $data = $ImgFetcher->getImageData($IMAGE_LINK);
 
                 if(isset($data)){
@@ -350,13 +369,18 @@ class ImageFetcher extends DataLogger
 
             $ImageClassify = new ImageClassifier();
 
-            return array(
-                'safety' => $data->getSafety(),
-                'post_title' => $ImageClassify->getPostTitle($method_params, $comment_info, $inform),
-                'post_comment' => $ImageClassify->getPostComment($IMAGE_LINK, $IMAGE_AUTHOR),
-                'comment' => $ImageClassify->getComment($data),
-                'comment_photo' => $ImageClassify->getPhoto($data)
-            );
+            if (isset( $data )) {
+                return array(
+                    'safety' => $data->getSafety(),
+                    'post_title' => $ImageClassify->getPostTitle($method_params, $comment_info, $inform),
+                    'post_comment' => $ImageClassify->getPostComment($IMAGE_LINK, $IMAGE_AUTHOR),
+                    'comment' => $ImageClassify->getComment($data),
+                    'comment_photo' => $ImageClassify->getPhoto($data)
+                );
+            } else {
+                $message =  'no safety: '. $data->getUrl();
+                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
+            }
 
         } catch (Exception $e){
             $message =  $e->getMessage();

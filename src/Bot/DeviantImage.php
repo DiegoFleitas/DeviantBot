@@ -36,8 +36,9 @@ class DeviantImage
      * DeviantImage constructor.
      * @param string $json
      */
-    public function __construct($json)
+    public function __construct($json, $url)
     {
+        $this->url = $url;
         $data = json_decode($json);
         $this->author_name = $data->author_name;
         $this->author_url = $data->author_url;
@@ -56,6 +57,14 @@ class DeviantImage
         if(isset($data->category)) $this->category = $data->category;
         $this->classification = null;
         $this->params = null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUrl()
+    {
+        return $this->url;
     }
 
     /**

@@ -19,17 +19,17 @@ class ImageClassifier
 
 
         //<editor-fold desc="$meme_material and $terrible Arrays">
-        $meme_material = array(
-            'oc',
-            'fatoc',
-            'webcomicoc',
-            'undertaleoc',
-            'sonicoc',
-            'sonicfancharacter',
-            'fan_character',
-            'ocxcanon',
-            'sansxoc',
-        );
+//        $meme_material = array(
+//            'oc',
+//            'fatoc',
+//            'webcomicoc',
+//            'undertaleoc',
+//            'sonicoc',
+//            'sonicfancharacter',
+//            'fan_character',
+//            'ocxcanon',
+//            'sansxoc',
+//        );
 
         //FIXME this should be done better
         $terrible = array(
@@ -129,7 +129,7 @@ class ImageClassifier
 
         $image_tags = explode(', ', $tags);
         $isTerribleImage = array_intersect($image_tags, $terrible);
-        $isMemeMaterial = array_intersect($image_tags, $meme_material);
+//        $isMemeMaterial = array_intersect($image_tags, $meme_material);
 
         if(!empty($isTerribleImage)){
             return true;
@@ -241,6 +241,7 @@ class ImageClassifier
     /**
      * @param string $params
      * @param array $comment_info
+     * @param string $inform
      * @return string
      */
     function getPostTitle($params, $comment_info, $inform){

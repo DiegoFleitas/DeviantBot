@@ -108,6 +108,7 @@ class ImageTransformer extends DataLogger
 
                     // draw a red line with 5 pixel width
                     $img->line($posx1, $posy1, $posx2, $posy2, function ($draw) {
+                        /** @var Intervention\Image\Imagick\Shapes\LineShape $draw */
                         $draw->color('#f00');
                         $draw->width(5);
                     });
@@ -252,7 +253,9 @@ class ImageTransformer extends DataLogger
 
                 array_push($params, $posx);
                 array_push($params, $posy);
+
                 $img->text($random_string, $posx, $posy, function($font) {
+                    /** @var Intervention\Image\Imagick\Font $font */
                     $font->file(__DIR__ .'\fonts\lucida');
                     $font->size(mt_rand(24 , 60));
                     // hacker green

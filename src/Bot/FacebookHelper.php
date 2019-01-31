@@ -61,16 +61,19 @@ class FacebookHelper extends DataLogger
                     $imagequery = '?fields=attachment';
                 }
 
-                // Returns a `Facebook\FacebookResponse` object
+                /** @var $response \Facebook\FacebookResponse */
                 $response = $fb->get('/' . $POST_ID . '/comments' . $imagequery);
 
+                /** @var $graphEdge Facebook\GraphNodes\GraphEdge */
                 $graphEdge = $response->getGraphEdge();
                 var_dump($graphEdge->asArray());
 
                 // Iterate over all the GraphNode's returned from the edge
+                /** @var $graphNode Facebook\GraphNodes\GraphNode */
                 foreach ($graphEdge as $graphNode) {
 
                     // ignore blacklisted users
+                    /** @var $from Facebook\GraphNodes\GraphNode */
                     $from = $graphNode->getField('from');
                     if (isset($from)) {
                         $name = $from->getField('name');
@@ -79,8 +82,7 @@ class FacebookHelper extends DataLogger
                             $blacklist = array();
                             if (!in_array($name, $blacklist)) {
 
-                                $message = 'comment made by: ' . $name;
-                                $this->logdata($message);
+
 
                                 $text = $graphNode->getField('message');
                                 $text = strtolower($text);
@@ -90,6 +92,9 @@ class FacebookHelper extends DataLogger
                                 if ($PHOTO_COMMENT) {
                                     $attachment = $graphNode->getField('attachment');
                                     if (isset($attachment)) {
+
+                                        $message = 'comment made by: ' . $name;
+                                        $this->logdata($message);
 
                                         // return first photo comment
                                         $photo = $attachment->getField('url');
@@ -106,6 +111,10 @@ class FacebookHelper extends DataLogger
                                     $possiblecommand = $comment->startsWithAny($CI->getAvailableCommands());
                                     $length = strlen($comment);
                                     if ($possiblecommand && $length <= $CI->getMaxlength() && $length >= $CI->getMinlength()) {
+
+                                        $message = 'comment made by: ' . $name;
+                                        $this->logdata($message);
+
                                         return array(
                                             'who' => $name,
                                             'text' => $text
@@ -113,6 +122,10 @@ class FacebookHelper extends DataLogger
                                     }
 
                                 } else {
+
+                                    $message = 'comment made by: ' . $name;
+                                    $this->logdata($message);
+
                                     // return first comment
                                     return array(
                                         'who' => $name,
@@ -133,9 +146,6 @@ class FacebookHelper extends DataLogger
                 $logmessage = 'No comments found.';
                 $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage);
 
-            } catch (Facebook\Exceptions\FacebookResponseException $e) {
-                $logmessage = 'Graph returned an error: ' . $e->getMessage();
-                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage, 1);
             } catch (Facebook\Exceptions\FacebookSDKException $e) {
                 $logmessage = 'Facebook SDK returned an error: ' . $e->getMessage();
                 $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage, 1);
@@ -164,12 +174,9 @@ class FacebookHelper extends DataLogger
             }
 
             // $ID_REFERENCE Could either be a post or a comment
-            // Returns a `Facebook\FacebookResponse` object
+            /** @var $response \Facebook\FacebookResponse */
             $response = $fb->post($ID_REFERENCE.'/comments', $data);
 
-        } catch(Facebook\Exceptions\FacebookResponseException $e) {
-            $message = 'Graph returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } catch(Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
@@ -186,14 +193,11 @@ class FacebookHelper extends DataLogger
 
         try {
 
-            // Returns a `Facebook\FacebookResponse` object
+            /** @var $response \Facebook\FacebookResponse */
             $response = $fb->get('/'.$POST_ID);
 
             return $response->getGraphNode();
 
-        } catch(Facebook\Exceptions\FacebookResponseException $e) {
-            $message = 'Graph returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } catch(Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
@@ -222,8 +226,10 @@ class FacebookHelper extends DataLogger
                 'message' => $POST_TITLE
             );
 
+            /** @var $response \Facebook\FacebookResponse */
             $response = $fb->post('/me/photos', $data);
 
+            /** @var $graphNode Facebook\GraphNodes\GraphNode */
             $graphNode = $response->getGraphNode();
             $post_id = $graphNode->getField('id');
             // if safe comment the author and original image
@@ -253,9 +259,6 @@ class FacebookHelper extends DataLogger
                 $this->logdata('the file couldn\'t deleted.');
             }
 
-        } catch(Facebook\Exceptions\FacebookResponseException $e) {
-            $message = 'Graph returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } catch(Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
@@ -271,15 +274,17 @@ class FacebookHelper extends DataLogger
 
         try {
 
-            // Returns a `Facebook\FacebookResponse` object
+            /** @var $response \Facebook\FacebookResponse */
             $response = $fb->get(
                 '/me/feed'
             );
 
+            /** @var $graphEdge Facebook\GraphNodes\GraphEdge */
             $graphEdge = $response->getGraphEdge();
 //            var_dump($graphEdge->asArray());
 
             // Iterate over all the GraphNode's returned from the edge
+            /** @var $graphNode Facebook\GraphNodes\GraphNode */
             foreach ($graphEdge as $graphNode) {
                 // avoid polls
                 $story = $graphNode->getField('story');
@@ -292,9 +297,6 @@ class FacebookHelper extends DataLogger
             $message = 'No valid post found.';
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
 
-        } catch(Facebook\Exceptions\FacebookResponseException $e) {
-            $message = 'Graph returned an error: ' . $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } catch(Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);

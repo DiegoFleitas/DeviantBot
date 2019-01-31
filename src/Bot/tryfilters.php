@@ -22,9 +22,9 @@ use Intervention\Image\ImageManagerStatic as Image;
 //$FORCE_FILTER = 11; //WIDEN
 //$FORCE_FILTER = 12; //LIMIT COLORS
 //$FORCE_FILTER = 13; //SHARPEN
-//$FORCE_FILTER = 14; //TEXT
+$FORCE_FILTER = 14; //TEXT
 //$FORCE_FILTER = 15; //CROP
-$FORCE_FILTER = 16; //FRY
+//$FORCE_FILTER = 16; //FRY
 $image_path = 'test/filter_'.$FORCE_FILTER.'.jpg';
 
 // REMOTE
