@@ -6,8 +6,8 @@
  * Time: 2:48 PM
  */
 
-require_once realpath(__DIR__ . '/../..'). '/vendor/autoload.php';
-require_once 'secrets.php';
+require_once realpath( __DIR__ . '/../..' ) . '/vendor/autoload.php';
+require_once 'resources/secrets.php';
 require_once 'ImageTransformer.php';
 require_once 'ImageFetcher.php';
 require_once 'FacebookHelper.php';
@@ -16,12 +16,12 @@ require_once 'DataLogger.php';
 $dt = new DataLogger();
 $dt->logdata('[LASTPOST]');
 
-$FBhelper = new FacebookHelper();
-$fb = $FBhelper->init($_APP_ID, $_APP_SECRET, $_ACCESS_TOKEN_DEBUG);
+$FB_helper = new FacebookHelper();
+$fb = $FB_helper->init($_APP_ID, $_APP_SECRET, $_ACCESS_TOKEN_DEBUG);
 
-$post = $FBhelper->getLastPost($fb);
+$post = $FB_helper->getLastPost($fb);
 
-$raw_comment = $FBhelper->getFirstComment($fb, $post);
+$raw_comment = $FB_helper->getFirstComment($fb, $post);
 
 //FILTER_SANITIZE_STRING: Strip tags, optionally strip or encode special characters.
 //FILTER_FLAG_STRIP_LOW: strips bytes in the input that have a numerical value <32, most notably null bytes and other control characters such as the ASCII bell.

@@ -19,9 +19,9 @@ use Intervention\Image\ImageManagerStatic as Image;
 // configure with favored image driver (gd by default)
 Image::configure(array('driver' => 'imagick'));
 
-$image_path = 'reactions/botcomment_photo.jpg';
+$image_path = 'resources/reactions/botcomment_photo.jpg';
 $img = Image::make($image_path);
 
-$image_path = 'test/botcomment_photo.jpg';
+$image_path = 'debug/test/botcomment_photo.jpg';
 $ImgTrans = new ImageTransformer();
-$ImgTrans->TransformRandomly($img, $image_path, "nonadult", 'reaction-reroll', 1);
+$ImgTrans->transformRandomly($img, $image_path, "nonadult", 'reaction-reroll', 1);

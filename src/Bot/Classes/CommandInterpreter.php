@@ -6,7 +6,6 @@
  * Time: 5:11 PM
  */
 
-
 use Stringy\Stringy as S;
 
 class CommandInterpreter extends DataLogger
@@ -78,11 +77,12 @@ class CommandInterpreter extends DataLogger
      * @param string $_COMMENT
      * @return array
      */
-    function identifyCommand($_COMMENT){
+    public function identifyCommand($_COMMENT)
+    {
 
         $length = strlen($_COMMENT);
         $comment = S::create($_COMMENT);
-        if($length <= $this->getMaxlength() && $length > $this->getMinlength()){
+        if ($length <= $this->getMaxlength() && $length > $this->getMinlength()) {
             try {
                 $message = 'identifying [' . $_COMMENT . ']';
                 $this->logdata($message);
@@ -94,17 +94,14 @@ class CommandInterpreter extends DataLogger
                 $non_space = str_replace(' ', '', $comment);
                 $alpha = S::create($non_space)->isAlpha();
                 if ($alpha) {
-
                     // Returns an array with a maximum of maxwords elements
                     $tokens = explode($this->getSeparator(), $comment, $this->getMaxwords());
                     if (count($tokens) >= $this->getMinwords()) {
                         $command = $this->isCommand($tokens[0]);
                         if ($command) {
-
                             $result = $this->validateCommand($tokens);
-                            if($result['success']){
-
-                                $message = 'identified command [' . $result['command'] . '] params [' .  implode( ' ', $result['params']) . ']';
+                            if ($result['success']) {
+                                $message = 'identified command [' . $result['command'] . '] params [' .  implode(' ', $result['params']) . ']';
                                 $this->logdata($message);
 
                                 return array(
@@ -155,7 +152,8 @@ class CommandInterpreter extends DataLogger
      * @param string $word
      * @return bool|mixed
      */
-    function isCommand($word){
+    public function isCommand($word)
+    {
 
         try {
             $available = $this->getAvailableCommands();
@@ -176,7 +174,8 @@ class CommandInterpreter extends DataLogger
      * @param array $tokens
      * @return array
      */
-    function validateCommand($tokens){
+    public function validateCommand($tokens)
+    {
 
         try {
             $result = array(
@@ -188,9 +187,8 @@ class CommandInterpreter extends DataLogger
             $command = $tokens[0];
             $params = array_slice($tokens, 1);
             switch ($command) {
-
                 case 'keyword':
-
+                    /** @var array $result */
                     $result['command'] = 'keyword';
                     if (count($params) > 3) {
                         $result['reason'] = 'too many params';
@@ -207,7 +205,6 @@ class CommandInterpreter extends DataLogger
                     break;
 
                 case 'tag':
-
                     $result['command'] = 'tag';
                     if (count($params) > 3) {
                         $result['reason'] = 'too many params';
@@ -228,9 +225,5 @@ class CommandInterpreter extends DataLogger
             $data = $e->getMessage();
             $this->logdata($data, 1);
         }
-
     }
-
-
-
 }

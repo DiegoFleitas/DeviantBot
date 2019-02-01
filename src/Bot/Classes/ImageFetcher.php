@@ -6,14 +6,11 @@
  * Time: 9:45 PM
  */
 
-
-require_once 'DeviantImage.php';
-require_once 'ImageTransformer.php';
-require_once 'DataLogger.php';
-require_once 'ImageClassifier.php';
-require_once 'CommandInterpreter.php';
-
 use Intervention\Image\ImageManagerStatic as Image;
+
+require_once('DeviantImage.php');
+require_once('ImageClassifier.php');
+require_once('DataLogger.php');
 
 class ImageFetcher extends DataLogger
 {
@@ -26,14 +23,15 @@ class ImageFetcher extends DataLogger
      * @param array $keywords
      * @return string
      */
-    function buildRSSURL($dailydeviations, $popular, $tags, $keywords){
+    public function buildRSSURL($dailydeviations, $popular, $tags, $keywords)
+    {
 
         $url_rss = 'http://backend.deviantart.com/rss.xml?&q=';
 
-        if($dailydeviations){
+        if ($dailydeviations) {
             // Daily deviations
             $url_rss .= 'special:dd'.rawurlencode(' ');
-        } elseif($popular) {
+        } elseif ($popular) {
             // Popular from last 24 hours
             $url_rss .= 'boost:popular'.rawurlencode(' max_age:24h ');
         } else {
@@ -43,23 +41,23 @@ class ImageFetcher extends DataLogger
 
         $params = '';
         //TODO add searching by title
-        foreach($keywords as $keyword){
+        foreach ($keywords as $keyword) {
             $params .= $keyword.' ';
         }
 
-        foreach($tags as $tag){
+        foreach ($tags as $tag) {
             $params .= 'tag:'.$tag.' ';
         }
 
         // Exclude literature category since most are just text
         // Not compatible with meta:all tag
-        if($dailydeviations || $popular){
+        if ($dailydeviations || $popular) {
             $lit = '-in:literature ';
             $url_rss .= rawurlencode($lit);
         }
 
 
-        if(!$popular){
+        if (!$popular) {
             $params .= 'sort:time ';
         }
 
@@ -79,7 +77,8 @@ class ImageFetcher extends DataLogger
      * @param string $media
      * @return bool|string
      */
-    function getRawDeviantArtData($url, $media = 'JSON'){
+    public function getRawDeviantArtData($url, $media = 'JSON')
+    {
 
         $curl = curl_init();
 
@@ -106,7 +105,7 @@ class ImageFetcher extends DataLogger
             $message = $media." cURL Error #:" . $err.'  url: '.$url;
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } else {
-            if($httpcode != '200'){
+            if ($httpcode != '200') {
                 $message =  $media." Http code error #:" . $httpcode.'  url: '.$url;
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
@@ -118,12 +117,13 @@ class ImageFetcher extends DataLogger
      * @param string $link
      * @return DeviantImage
      */
-    function getImageData($link){
+    public function getImageData($link)
+    {
 
         $CURLOPT_URL = "https://backend.deviantart.com/oembed?url=".rawurlencode($link);
 
         $response = $this->getRawDeviantArtData($CURLOPT_URL, "JSON");
-        if($response){
+        if ($response) {
             return new DeviantImage($response, $CURLOPT_URL);
         }
     }
@@ -134,49 +134,45 @@ class ImageFetcher extends DataLogger
      * @param array $keywords
      * @return mixed
      */
-    function getImagelinksFromRSS($type, $tags, $keywords){
+    public function getImagelinksFromRSS($type, $tags, $keywords)
+    {
 
-        if($type == 'DAILY'){
+        if ($type == 'DAILY') {
             // DailyDeviations
             //http://backend.deviantart.com/rss.xml?q=special:dd sort:time
-            $CURLOPT_URL = $this->buildRSSURL( true, false, $tags, $keywords);
-        } elseif($type == 'POPULAR'){
+            $CURLOPT_URL = $this->buildRSSURL(true, false, $tags, $keywords);
+        } elseif ($type == 'POPULAR') {
             // Newest popular
             //http://backend.deviantart.com/rss.xml?q=boost:popular max_age:24h sort:time
-            $CURLOPT_URL = $this->buildRSSURL( false, true, $tags, $keywords);
-        } elseif($type == 'ANY'){
+            $CURLOPT_URL = $this->buildRSSURL(false, true, $tags, $keywords);
+        } elseif ($type == 'ANY') {
             // Newest Any
             //http://backend.deviantart.com/rss.xml?q=meta:all sort:time
-            $CURLOPT_URL = $this->buildRSSURL( false, false, $tags, $keywords);
+            $CURLOPT_URL = $this->buildRSSURL(false, false, $tags, $keywords);
         }
 
-        if(!empty($CURLOPT_URL)){
+        if (!empty($CURLOPT_URL)) {
             $response = $this->getRawDeviantArtData($CURLOPT_URL, 'RSS');
-            if($response){
+            if ($response) {
                 //Process XML
                 try {
-
                     $this->logxml($type, $response);
 
                     /** @var  $links array */
                     $links = $this->parseXMLResponse($response);
 
-
-                    if(!empty($links)){
+                    if (!empty($links)) {
                         return $links;
                     }
-
-                } catch (Exception $e){
+                } catch (Exception $e) {
                     $message = $e->getMessage();
                     $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
                 }
             }
         } else {
             $message = '$CURLOPT_URL empty';
-            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message,1 );
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
-
-
     }
 
     /**
@@ -184,13 +180,14 @@ class ImageFetcher extends DataLogger
      * @param string $response
      * @return array
      */
-    function parseXMLResponse($response){
-        $xml = new SimpleXMLElement($response);
+    public function parseXMLResponse($response)
+    {
+        $xml = new \SimpleXMLElement($response);
         $links_array = array();
-        /** @var  $item SimpleXMLElement */
-        foreach($xml->xpath('channel/item') as $item){
+        /** @var $item SimpleXMLElement */
+        foreach ($xml->xpath('channel/item') as $item) {
             if (!empty($item->link)) {
-                array_push($links_array,  (string)$item->link) ;
+                array_push($links_array, (string)$item->link) ;
             } else {
                 if (!empty($item)) {
                     $title = $item->title;
@@ -212,12 +209,13 @@ class ImageFetcher extends DataLogger
      * @param array $keywords
      * @return mixed
      */
-    function getRandom($TYPE, $tags, $keywords){
+    public function getRandom($TYPE, $tags, $keywords)
+    {
 
         $ImgFetch = new ImageFetcher();
         $links = $ImgFetch->getImagelinksFromRSS($TYPE, $tags, $keywords);
 
-        if(!empty($links)){
+        if (!empty($links)) {
             $random_index = mt_rand(0, count($links) - 1);
             return $links[$random_index];
         } else {
@@ -225,7 +223,6 @@ class ImageFetcher extends DataLogger
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
             return false;
         }
-
     }
 
     /**
@@ -233,7 +230,8 @@ class ImageFetcher extends DataLogger
      * @param string $path
      * @return bool|string
      */
-    function saveImageLocally($url, $path){
+    public function saveImageLocally($url, $path)
+    {
 
         $curl = curl_init($url);
         $fp = fopen($path, 'wb');
@@ -255,20 +253,20 @@ class ImageFetcher extends DataLogger
             $message = "SaveImage cURL Error #:" . $err.' url:'.$url;
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } else {
-            if($httpcode != '200'){
+            if ($httpcode != '200') {
                 $message =  "SaveImage Http code error #:" . $httpcode.' url:'.$url;
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
             return $response;
         }
-
     }
 
     /**
      * @param DeviantImage $DeviantImage
      * @return mixed
      */
-    function directURL($DeviantImage){
+    public function directURL($DeviantImage)
+    {
 
         $h = $DeviantImage->getHeight();
         $w = $DeviantImage->getWidth();
@@ -280,75 +278,74 @@ class ImageFetcher extends DataLogger
         $url = str_replace('300w', 'fullview', $url);
 
         return $url;
-
     }
 
 
     /**
-     * @param $fb \Facebook\Facebook
+     * @param $fb Facebook\Facebook
      * @param string $TYPE
      * @param string $IMAGE_PATH
      * @return array
      */
-    function FetchSaveTransform($fb, $TYPE, $IMAGE_PATH){
+    public function fetchSaveTransform($fb, $TYPE, $IMAGE_PATH)
+    {
 
-
-        $FBhelper = new FacebookHelper();
-        $comment_info = $FBhelper->firstCommandFromLastPost($fb);
+        $FB_helper = new FacebookHelper();
+        $comment_info = $FB_helper->firstCommandFromLastPost($fb);
 
         $CI = new CommandInterpreter();
         $result = $CI->identifyCommand($comment_info['text']);
 
         $tags = array();
         $keywords = array();
-        // Use commands given in comment
-        if($result){
 
+        $inform = '';
+        $method_params = '';
+        // Use commands given in comment
+        if ($result) {
             // invalid
-            if($result['output']){
+            if ($result['output']) {
                 $inform = $result['output'];
             } else {
-                if($result['command'] == 'keyword'){
+                if ($result['command'] == 'keyword') {
                     $keywords = $result['params'];
-                } elseif($result['command'] == 'tag'){
+                } elseif ($result['command'] == 'tag') {
                     $tags = $result['params'];
                 }
             }
-
         }
 
         $ImgFetcher = new ImageFetcher();
         $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, $tags, $keywords);
         // search failed
-        if(!$IMAGE_LINK){
+        if (!$IMAGE_LINK) {
             // if failed search had tag or keyword
-            if(isset($tags) || isset($keywords)){
+            if (isset($tags) || isset($keywords)) {
                 // will search randomly on its own
                 $inform = 'Valid command, but found no results.';
                 $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, [], []);
             }
         }
 
-        try{
-
-            if(!empty($IMAGE_LINK)){
+        try {
+            if (!empty($IMAGE_LINK)) {
 
                 /** @var DeviantImage $data */
                 $data = $ImgFetcher->getImageData($IMAGE_LINK);
 
-                if(isset($data)){
+                if (isset($data)) {
                     // If not set returns Uknown
                     $IMAGE_AUTHOR = $data->getAuthorName();
                 }
 
                 $true_url = $ImgFetcher->directURL($data);
 
-                if(empty($true_url)){
+                if (empty($true_url)) {
                     $message = 'Image link: '.$IMAGE_LINK;
                     $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
                 }
 
-                $IMAGE_PATH_NEW = 'test/original-image.jpg';
+                $IMAGE_PATH_NEW = 'debug/test/original-image.jpg';
 
                 $ImgFetcher->saveImageLocally($true_url, $IMAGE_PATH_NEW);
 
@@ -361,15 +358,14 @@ class ImageFetcher extends DataLogger
 
                 // Transform only once
                 $TRANSFORM_TIMES = 1;
-                $method_params = $ImgTrans->TransformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, $TRANSFORM_TIMES);
-
+                $method_params = $ImgTrans->transformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, $TRANSFORM_TIMES);
             } else {
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__, 1);
             }
 
             $ImageClassify = new ImageClassifier();
 
-            if (isset( $data )) {
+            if (isset($data)) {
                 return array(
                     'safety' => $data->getSafety(),
                     'post_title' => $ImageClassify->getPostTitle($method_params, $comment_info, $inform),
@@ -382,11 +378,9 @@ class ImageFetcher extends DataLogger
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
 
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $message =  $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
-
     }
-
 }

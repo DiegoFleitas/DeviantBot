@@ -6,8 +6,8 @@
  * Time: 2:48 PM
  */
 
-require_once realpath(__DIR__ . '/../..'). '/vendor/autoload.php';
-require_once 'secrets.php';
+require_once realpath( __DIR__ . '/../..' ) . '/vendor/autoload.php';
+require_once 'resources/secrets.php';
 require_once 'ImageTransformer.php';
 require_once 'ImageFetcher.php';
 require_once 'FacebookHelper.php';

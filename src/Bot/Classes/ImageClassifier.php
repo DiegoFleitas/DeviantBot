@@ -15,8 +15,8 @@ class ImageClassifier
      * @param string $tags
      * @return bool
      */
-    function classifyByTags($tags){
-
+    public function classifyByTags($tags)
+    {
 
         //<editor-fold desc="$meme_material and $terrible Arrays">
 //        $meme_material = array(
@@ -131,31 +131,30 @@ class ImageClassifier
         $isTerribleImage = array_intersect($image_tags, $terrible);
 //        $isMemeMaterial = array_intersect($image_tags, $meme_material);
 
-        if(!empty($isTerribleImage)){
+        if (!empty($isTerribleImage)) {
             return true;
         }
         return false;
-
     }
 
     /**
      * @param DeviantImage $devimg
      * @return mixed
      */
-    function classify($devimg){
+    public function classify($devimg)
+    {
 
-        if(null !== $devimg->getClassification()){
+        if (null !== $devimg->getClassification()) {
             return $devimg->getClassification();
         } else {
-
             $devimg->setClassification('ok');
 
             // unsafe
-            if($devimg->getSafety() !== 'nonadult'){
+            if ($devimg->getSafety() !== 'nonadult') {
                 $devimg->setClassification('nsfw');
             }
 
-            if($this->classifyByTags($devimg->getTags())){
+            if ($this->classifyByTags($devimg->getTags())) {
                 $devimg->setClassification('bad');
             } else {
                 $category = $devimg->getCategory();
@@ -167,52 +166,50 @@ class ImageClassifier
             return $devimg->getClassification();
 
         }
-
     }
 
     /**
      * @param DeviantImage $devimg
      * @return string
      */
-    function getPhoto($devimg){
+    public function getPhoto($devimg)
+    {
 
         $PATH = '';
 
         $type = $this->classify($devimg);
-        if($type == 'bad'){
-            $PATH = 'reactions/negative/'. mt_rand(1, 47).'.jpg';
-        } elseif($type == 'nsfw'){
-            $PATH = 'reactions/tempted/'. mt_rand(1, 27).'.jpg';
+        if ($type == 'bad') {
+            $PATH = 'resources/reactions/negative/'. mt_rand(1, 47).'.jpg';
+        } elseif ($type == 'nsfw') {
+            $PATH = 'resources/reactions/tempted/'. mt_rand(1, 27).'.jpg';
         }
 
         // if its worth to react
-        if($type !== 'ok'){
+        if ($type !== 'ok') {
             // Transform local reaction image
             Image::configure(array('driver' => 'imagick'));
 
             $img = Image::make($PATH);
 
-            $image_path = 'test/botcomment_photo.jpg';
+            $image_path = 'debug/test/botcomment_photo.jpg';
             $ImgTrans = new ImageTransformer();
-            $ImgTrans->TransformRandomly($img, $image_path, 'nonadult', 'reaction-reroll', 1);
+            $ImgTrans->transformRandomly($img, $image_path, 'nonadult', 'reaction-reroll', 1);
 
             return $image_path;
         }
 
         return $PATH;
-
     }
 
     /**
      * @param DeviantImage $devimg
      * @return mixed|string
      */
-    function getComment($devimg){
-
+    public function getComment($devimg)
+    {
         $comment = '';
         $type = $this->classify($devimg);
-        if($type == 'bad'){
-
+        if ($type == 'bad') {
             $negative = array(
                 'No bot has seen worst',
                 'Bot does not like.',
@@ -222,8 +219,7 @@ class ImageClassifier
             $rnd_index = mt_rand(0, count($negative) - 1);
             $comment = $negative[$rnd_index];
 
-        } elseif($type == 'nsfw'){
-
+        } elseif ($type == 'nsfw') {
             $tempted = array(
                 'Oof',
                 'Bot likes.',
@@ -233,8 +229,8 @@ class ImageClassifier
             $rnd_index = mt_rand(0, count($tempted) - 1);
             $comment = $tempted[$rnd_index];
         }
-        return $comment;
 
+        return $comment;
     }
 
 
@@ -244,13 +240,14 @@ class ImageClassifier
      * @param string $inform
      * @return string
      */
-    function getPostTitle($params, $comment_info, $inform){
-        if(!empty($inform)){
+    public function getPostTitle($params, $comment_info, $inform)
+    {
+        if (!empty($inform)) {
             return 'Beep Boop I found this, but I think it got corrupted along the way.
                     
                     ~'.$params.'~
                     Command: '.$comment_info['text'].' => '.$inform;
-        }elseif(!empty($comment_info['text']) && !empty($comment_info['who'])){
+        } elseif (!empty($comment_info['text']) && !empty($comment_info['who'])) {
             return 'Beep Boop I found this, but I think it got corrupted along the way.
                     
                     ~'.$params.'~
@@ -267,7 +264,8 @@ class ImageClassifier
      * @param string $IMAGE_AUTHOR
      * @return string
      */
-    function getPostComment($IMAGE_LINK, $IMAGE_AUTHOR){
+    public function getPostComment($IMAGE_LINK, $IMAGE_AUTHOR)
+    {
         return 'Original image: 
                 '.$IMAGE_LINK.'
                 author: '.$IMAGE_AUTHOR;

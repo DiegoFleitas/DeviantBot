@@ -6,10 +6,9 @@
  * Time: 9:30 PM
  */
 
-include_once('ImageFetcher.php');
-
 class DeviantImage
 {
+    private $url;
     private $author_name;
     private $author_url;
     private $provider_name;
@@ -30,11 +29,15 @@ class DeviantImage
     private $thumbnail_url_200h;
     private $thumbnail_width_200h;
     private $thumbnail_height_200h;
+    private $classification;
+    private $category;
+    private $params;
 
 
     /**
      * DeviantImage constructor.
      * @param string $json
+     * @param string $url
      */
     public function __construct($json, $url)
     {
@@ -47,14 +50,26 @@ class DeviantImage
         $this->safety = $data->safety;
         $this->pubdate = $data->pubdate;
         $this->community = $data->community;
-        if(isset($data->product)) $this->product = $data->product;
-        if(isset($data->tags)) $this->tags = $data->tags;
-        if(isset($data->copyright)) $this->copyright = $data->copyright;
+        if (isset($data->product)) {
+            $this->product = $data->product;
+        }
+        if (isset($data->tags)) {
+            $this->tags = $data->tags;
+        }
+        if (isset($data->copyright)) {
+            $this->copyright = $data->copyright;
+        }
         $this->width = $data->width;
         $this->height = $data->height;
-        if(isset($data->imagetype)) $this->imagetype = $data->imagetype;
-        if(isset($data->thumbnail_url)) $this->thumbnail_url = $data->thumbnail_url;
-        if(isset($data->category)) $this->category = $data->category;
+        if (isset($data->imagetype)) {
+            $this->imagetype = $data->imagetype;
+        }
+        if (isset($data->thumbnail_url)) {
+            $this->thumbnail_url = $data->thumbnail_url;
+        }
+        if (isset($data->category)) {
+            $this->category = $data->category;
+        }
         $this->classification = null;
         $this->params = null;
     }
@@ -122,7 +137,9 @@ class DeviantImage
      */
     public function getAuthorName()
     {
-        if(isset($this->author_name)) return $this->author_name;
+        if (isset($this->author_name)) {
+            return $this->author_name;
+        }
         return 'Uknown';
     }
 

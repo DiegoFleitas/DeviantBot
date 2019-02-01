@@ -6,7 +6,7 @@
  * Time: 11:52 PM
  */
 
-require_once 'DataLogger.php';
+require_once 'Classes\DataLogger.php';
 
 class ImageTransformer extends DataLogger
 {
@@ -20,27 +20,22 @@ class ImageTransformer extends DataLogger
      * @param bool $forcefilter
      * @return string
      */
-    function TransformRandomly($img, $path, $safety, $IMAGE_LINK, $n = 1, $forcefilter = false){
-
+    public function transformRandomly($img, $path, $safety, $IMAGE_LINK, $n = 1, $forcefilter = false)
+    {
         // n is how many rolls
-        for($n; $n > 0; $n--){
-
-
+        for ($n; $n > 0; $n--) {
             $result = $this->randomTransformation($img, $safety, $forcefilter);
-
             $this->logdata('link: '.$IMAGE_LINK.' method: '.$result['method'].' params: '.$result['params']);
         }
-
 
         // TODO: The optimal size for post (shared) images is 1,200 x 630 pixels.
         $img->save($path);
 
-        if(isset($result['params']) && isset($result['method'])){
+        if (isset($result['params']) && isset($result['method'])) {
             return 'method: '.$result['method'].' params: '.$result['params'];
         } else {
             return '';
         }
-
     }
 
     /**
@@ -50,54 +45,51 @@ class ImageTransformer extends DataLogger
      * @return array
      * @desc Transforms the image randomly (Except adult)
      */
-    function randomTransformation($img, $safety = 'nonadult', $forcefilter = false){
+    public function randomTransformation($img, $safety = 'nonadult', $forcefilter = false)
+    {
 
         $params = array();
 
-        if(!$forcefilter){
+        if (!$forcefilter) {
             $do = mt_rand(1, 17);
 
             // if unsafe, pixelate
-            if($safety !== 'nonadult'){
+            if ($safety !== 'nonadult') {
                 $do = 999;
             }
         } else {
             $do = $forcefilter;
         }
 
-        switch($do){
+        switch ($do) {
             case 1:
-
                 // 50% chance of vertical and horizontal
-                if( mt_rand(0, 1)){
+                if (mt_rand(0, 1)) {
                     $method = 'flip vertically';
                     $img->flip('v');
-                } else{
+                } else {
                     $method = 'flip horizontally';
                     $img->flip('h');
                 }
                 break;
 
             case 2:
-
                 $method = 'rotate';
-                $aux = mt_rand(0 , 360);
+                $aux = mt_rand(0, 360);
                 array_push($params, $aux);
                 $img->rotate($aux);
                 break;
 
             case 3:
-
                 $method = 'lines';
                 $width = $img->getWidth();
                 $height = $img->getHeight();
 
-                for ($i = 0; $i < 4; $i++)
-                {
-                    $posx1 = mt_rand(0 , $width);
-                    $posy1 = mt_rand(0 , $height);
-                    $posx2 = mt_rand(0 , $width);
-                    $posy2 = mt_rand(0 , $height);
+                for ($i = 0; $i < 4; $i++) {
+                    $posx1 = mt_rand(0, $width);
+                    $posy1 = mt_rand(0, $height);
+                    $posx2 = mt_rand(0, $width);
+                    $posy2 = mt_rand(0, $height);
 
                     $message = 'line'.($i+1);
                     array_push($params, $message);
@@ -108,7 +100,7 @@ class ImageTransformer extends DataLogger
 
                     // draw a red line with 5 pixel width
                     $img->line($posx1, $posy1, $posx2, $posy2, function ($draw) {
-                        /** @var Intervention\Image\Imagick\Shapes\LineShape $draw */
+                        /** @var \Intervention\Image\Imagick\Shapes\LineShape $draw */
                         $draw->color('#f00');
                         $draw->width(5);
                     });
@@ -116,7 +108,6 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 4:
-
                 $method = 'blur';
                 $aux = mt_rand(10, 20);
                 array_push($params, $aux);
@@ -124,11 +115,10 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 5:
-
                 $method = 'brightness';
-                if(!$forcefilter){
+                if (!$forcefilter) {
                     // 75% chance to reroll
-                    if(mt_rand(0, 3)){
+                    if (mt_rand(0, 3)) {
                         $this->randomTransformation($img);
                     }
                 }
@@ -141,17 +131,15 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 6:
-
                 $method = 'greyscale';
                 $img->greyscale();
                 break;
 
             case 7:
-
                 $method = 'contrast';
-                if(!$forcefilter){
+                if (!$forcefilter) {
                     // 75% chance to reroll
-                    if(mt_rand(0, 3)){
+                    if (mt_rand(0, 3)) {
                         $this->randomTransformation($img);
                     }
                 }
@@ -163,13 +151,11 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 8:
-                
                 $method = 'invert';
                 $img->invert();
                 break;
 
             case 9:
-                
                 $method = 'colorize';
                 //Generate random color
                 $red = mt_rand(-100, 100);
@@ -182,9 +168,8 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 10:
-
                 $method = 'opacity';
-                if(!$forcefilter){
+                if (!$forcefilter) {
                     // 100% chance to reroll since Andi didn't like this filter
                     $this->randomTransformation($img);
                 }
@@ -196,7 +181,6 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 11:
-
                 $method = 'widen';
                 $actual_width = $img->getWidth();
                 // 7% to 10%
@@ -206,7 +190,6 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 12:
-                
                 $method = 'limitcolors';
                 $aux = 5;
                 array_push($params, $aux);
@@ -214,10 +197,9 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 13:
-
                 $method = 'sharpen';
                 // fry twice, since 100 is the max
-                for($i = 0; $i < 2; $i++){
+                for ($i = 0; $i < 2; $i++) {
                     $aux = 100;
                     array_push($params, $aux);
                     $img->sharpen($aux);
@@ -225,7 +207,6 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 14:
-                
                 $method = 'text';
 //                $random_string = $this->randomString();
                 $random_string = $this->randomCapital();
@@ -248,28 +229,27 @@ class ImageTransformer extends DataLogger
 //                $posy = mt_rand($height , $height);
 
                 // random
-                $posx = mt_rand(0 , $width);
-                $posy = mt_rand(0 , $height);
+                $posx = mt_rand(0, $width);
+                $posy = mt_rand(0, $height);
 
                 array_push($params, $posx);
                 array_push($params, $posy);
 
-                $img->text($random_string, $posx, $posy, function($font) {
-                    /** @var Intervention\Image\Imagick\Font $font */
-                    $font->file(__DIR__ .'\fonts\lucida');
-                    $font->size(mt_rand(24 , 60));
+                $img->text($random_string, $posx, $posy, function ($font) {
+                    /** @var \Intervention\Image\Imagick\Font $font */
+                    $font->file(__DIR__ . 'resources\fonts\lucida');
+                    $font->size(mt_rand(24, 60));
                     // hacker green
                     $font->color('#20c20e');
                     $font->align('center');
                     $font->valign('top');
-                    $font->angle(mt_rand(0 , 360));
+                    $font->angle(mt_rand(0, 360));
                 });
                 break;
 
             case 15:
-
                 $method = 'crop';
-                if(!$forcefilter){
+                if (!$forcefilter) {
                     //FIXME: 100% chance to reroll since I don't want to think of way to solve
                     // the problem of not picking uninteresting regions right now
                     $this->randomTransformation($img);
@@ -278,10 +258,10 @@ class ImageTransformer extends DataLogger
                 $width = $img->getWidth();
                 $height = $img->getHeight();
 
-                $posx1 = mt_rand(0 , $width);
-                $posy1 = mt_rand(0 , $height);
-                $posx2 = mt_rand(0 , $width);
-                $posy2 = mt_rand(0 , $height);
+                $posx1 = mt_rand(0, $width);
+                $posy1 = mt_rand(0, $height);
+                $posx2 = mt_rand(0, $width);
+                $posy2 = mt_rand(0, $height);
 
                 array_push($params, $posx1);
                 array_push($params, $posy1);
@@ -293,7 +273,6 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 16:
-
                 //FIXME this should be a filter()
                 //(brightness + invert + sharpen)
                 $method = 'demonic fry';
@@ -311,7 +290,7 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 17: //pixelate
-            default :
+            default:
                 $method = 'pixelate';
                 $aux = 20;
                 array_push($params, $aux);
@@ -321,21 +300,21 @@ class ImageTransformer extends DataLogger
         }
 
         // no params
-        if(count($params) < 1){
+        if (count($params) < 1) {
             array_push($params, 'none');
         }
 
         return array(
             'method' => $method,
-            'params' => implode(',',$params)
+            'params' => implode(',', $params)
         );
-
     }
 
     /**
      * @return string
      */
-    function randomString(){
+    public function randomString()
+    {
         // Generate random string
         $length = mt_rand(4, 10);
         $random_string  = '';
@@ -347,10 +326,9 @@ class ImageTransformer extends DataLogger
         // Seed it
         srand((double) microtime() * 1000000);
         $max = $length/2;
-        for ($i = 1; $i <= $max; $i++)
-        {
-            $random_string .= $consonants[mt_rand(0,19)];
-            $random_string .= $vowels[mt_rand(0,4)];
+        for ($i = 1; $i <= $max; $i++) {
+            $random_string .= $consonants[mt_rand(0, 19)];
+            $random_string .= $vowels[mt_rand(0, 4)];
         }
         return $random_string;
     }
@@ -358,7 +336,8 @@ class ImageTransformer extends DataLogger
     /**
      * @return mixed
      */
-    function randomCapital(){
+    public function randomCapital()
+    {
 
         //<editor-fold desc="array with capitals">
         $capitals = array(
@@ -568,7 +547,5 @@ class ImageTransformer extends DataLogger
 
         $random_index = mt_rand(0, count($capitals) - 1);
         return $capitals[$random_index];
-
     }
-
 }
