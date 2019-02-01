@@ -108,13 +108,10 @@ class CommandInterpreter extends DataLogger
                                     'command' => $result['command'],
                                     'params' => $result['params'],
                                 );
-
                             } else {
                                 $message = 'invalid command. '.$result['reason'];
                                 $this->logdata($message);
                             }
-
-
                         } else {
                             $message = 'command does not exist';
                             $this->logdata($message);
@@ -123,7 +120,6 @@ class CommandInterpreter extends DataLogger
                         $message = 'command unrecognized';
                         $this->logdata($message);
                     }
-
                 } else {
                     // comment contained characters that are not addmited
                     $message = 'command is not well formatted';
@@ -135,7 +131,6 @@ class CommandInterpreter extends DataLogger
                     'params' => $result['params'],
                     'output' => $message
                 );
-
             } catch (Exception $e) {
                 $data = $e->getMessage();
                 $this->logdata($data, 1);
@@ -145,7 +140,6 @@ class CommandInterpreter extends DataLogger
             $message = 'Too long/short. Comment: '.$comment;
             $this->logdata($message);
         }
-
     }
 
     /**
@@ -167,7 +161,6 @@ class CommandInterpreter extends DataLogger
             $data = $e->getMessage();
             $this->logdata($data, 1);
         }
-
     }
 
     /**

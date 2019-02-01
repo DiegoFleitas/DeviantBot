@@ -286,6 +286,7 @@ class ImageFetcher extends DataLogger
      * @param string $TYPE
      * @param string $IMAGE_PATH
      * @return array
+     * @throws \Facebook\Exceptions\FacebookSDKException
      */
     public function fetchSaveTransform($fb, $TYPE, $IMAGE_PATH)
     {
@@ -377,7 +378,6 @@ class ImageFetcher extends DataLogger
                 $message =  'no safety: '. $data->getUrl();
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
-
         } catch (Exception $e) {
             $message =  $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);

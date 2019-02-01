@@ -164,7 +164,6 @@ class ImageClassifier
             }
 
             return $devimg->getClassification();
-
         }
     }
 
@@ -218,7 +217,6 @@ class ImageClassifier
 
             $rnd_index = mt_rand(0, count($negative) - 1);
             $comment = $negative[$rnd_index];
-
         } elseif ($type == 'nsfw') {
             $tempted = array(
                 'Oof',
@@ -270,5 +268,4 @@ class ImageClassifier
                 '.$IMAGE_LINK.'
                 author: '.$IMAGE_AUTHOR;
     }
-
 }

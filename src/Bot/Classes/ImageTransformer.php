@@ -296,9 +296,7 @@ class ImageTransformer extends DataLogger
                 array_push($params, $aux);
                 $img->pixelate($aux);
                 break;
-
         }
-
         // no params
         if (count($params) < 1) {
             array_push($params, 'none');
