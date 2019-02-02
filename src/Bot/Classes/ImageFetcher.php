@@ -301,31 +301,32 @@ class ImageFetcher extends DataLogger
 
         $FB_helper = new FacebookHelper();
         $comment_info = $FB_helper->firstCommandFromLastPost($fb);
-        if (!empty($comment_info)) {
-            $CI = new CommandInterpreter();
-            $result = $CI->identifyCommand($comment_info['text']);
-        } else {
-            $message =  'empty comment';
-            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
-        }
 
         $tags = array();
         $keywords = array();
 
         $inform = '';
         $method_params = '';
-        // Use commands given in comment
-        if (!empty($result)) {
-            // invalid
-            if ($result['output']) {
-                $inform = $result['output'];
-            } else {
-                if ($result['command'] == 'keyword') {
-                    $keywords = $result['params'];
-                } elseif ($result['command'] == 'tag') {
-                    $tags = $result['params'];
+
+        if (!empty($comment_info)) {
+            $CI = new CommandInterpreter();
+            $result = $CI->identifyCommand($comment_info['text']);
+            // Use commands given in comment
+            if (!empty($result)) {
+                // invalid
+                if ($result['output']) {
+                    $inform = $result['output'];
+                } else {
+                    if ($result['command'] == 'keyword') {
+                        $keywords = $result['params'];
+                    } elseif ($result['command'] == 'tag') {
+                        $tags = $result['params'];
+                    }
                 }
             }
+        } else {
+            $message =  'empty comment';
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
         }
 
         $ImgFetcher = new ImageFetcher();
@@ -356,11 +357,8 @@ class ImageFetcher extends DataLogger
                 if (empty($true_url)) {
                     $message = 'Image link: '.$IMAGE_LINK;
                     $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
-                } else {
-                    $message = 'trying with raw url: '.$IMAGE_LINK;
-                    $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
-                    $true_url = $IMAGE_LINK;
                 }
+
                 $IMAGE_PATH_NEW = 'debug/test/original-image.jpg';
 
                 $success = $ImgFetcher->saveImageLocally($true_url, $IMAGE_PATH_NEW);

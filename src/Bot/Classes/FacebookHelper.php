@@ -133,9 +133,6 @@ class FacebookHelper extends DataLogger
                         }
                     }
                 }
-
-                $logmessage = 'No comments found.';
-                $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage);
             } catch (Facebook\Exceptions\FacebookSDKException $e) {
                 $logmessage = 'Facebook SDK returned an error: ' . $e->getMessage();
                 $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage, 1);
