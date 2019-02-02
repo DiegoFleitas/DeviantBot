@@ -75,7 +75,7 @@ class ImageFetcher extends DataLogger
      * @desc GET request to DeviantArt servers
      * @param string $url
      * @param string $media
-     * @return bool|string
+     * @return string
      */
     public function getRawDeviantArtData($url, $media = 'JSON')
     {
@@ -102,15 +102,16 @@ class ImageFetcher extends DataLogger
         curl_close($curl);
 
         if ($err) {
-            $message = $media." cURL Error #:" . $err.'  url: '.$url;
+            $message = $media.' cURL Error #:' . $err.'  url: '.$url.' response: '.$response;
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } else {
             if ($httpcode != '200') {
-                $message =  $media." Http code error #:" . $httpcode.'  url: '.$url;
+                $message =  $media.' Http code error #:' . $httpcode.'  url: '.$url.' response: '.$response;
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
             return $response;
         }
+        return '';
     }
 
     /**
@@ -123,8 +124,11 @@ class ImageFetcher extends DataLogger
         $CURLOPT_URL = "https://backend.deviantart.com/oembed?url=".rawurlencode($link);
 
         $response = $this->getRawDeviantArtData($CURLOPT_URL, "JSON");
-        if ($response) {
+        if (!empty($response)) {
             return new DeviantImage($response, $CURLOPT_URL);
+        } else {
+            $message = 'no response from curl '.$CURLOPT_URL;
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
     }
 
@@ -132,7 +136,7 @@ class ImageFetcher extends DataLogger
      * @param string $type
      * @param array $tags
      * @param array $keywords
-     * @return mixed
+     * @return array
      */
     public function getImagelinksFromRSS($type, $tags, $keywords)
     {
@@ -153,7 +157,7 @@ class ImageFetcher extends DataLogger
 
         if (!empty($CURLOPT_URL)) {
             $response = $this->getRawDeviantArtData($CURLOPT_URL, 'RSS');
-            if ($response) {
+            if (!empty($response)) {
                 //Process XML
                 try {
                     $this->logxml($type, $response);
@@ -173,6 +177,7 @@ class ImageFetcher extends DataLogger
             $message = '$CURLOPT_URL empty';
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
+        return [];
     }
 
     /**
@@ -207,7 +212,7 @@ class ImageFetcher extends DataLogger
      * @param string $TYPE
      * @param array $tags
      * @param array $keywords
-     * @return mixed
+     * @return string
      */
     public function getRandom($TYPE, $tags, $keywords)
     {
@@ -221,14 +226,14 @@ class ImageFetcher extends DataLogger
         } else {
             $message = 'no links found, retrying with no commands';
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
-            return false;
+            return '';
         }
     }
 
     /**
      * @param string $url
      * @param string $path
-     * @return bool|string
+     * @return bool
      */
     public function saveImageLocally($url, $path)
     {
@@ -250,20 +255,21 @@ class ImageFetcher extends DataLogger
         fclose($fp);
 
         if ($err) {
-            $message = "SaveImage cURL Error #:" . $err.' url:'.$url;
+            $message = 'SaveImage cURL Error #:' . $err.' url:'.$url.' response:'.$response;
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } else {
             if ($httpcode != '200') {
-                $message =  "SaveImage Http code error #:" . $httpcode.' url:'.$url;
+                $message =  'SaveImage Http code error #:' . $httpcode.' url:'.$url.' response:'.$response;
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
-            return $response;
+            return true;
         }
+        return false;
     }
 
     /**
      * @param DeviantImage $DeviantImage
-     * @return mixed
+     * @return string
      */
     public function directURL($DeviantImage)
     {
@@ -273,11 +279,14 @@ class ImageFetcher extends DataLogger
 
         $url = $DeviantImage->getThumbnailUrl();
 
-        $aux1 = 'fill/w_'. $w . ',h_'. $h;
-        $url = str_replace('fit/w_300,h_900', $aux1, $url);
-        $url = str_replace('300w', 'fullview', $url);
-
-        return $url;
+        if (!empty($url)) {
+            $aux1 = 'fill/w_'. $w . ',h_'. $h;
+            $url = str_replace('fit/w_300,h_900', $aux1, $url);
+            $url = str_replace('300w', 'fullview', $url);
+            return $url;
+        } else {
+            return '';
+        }
     }
 
 
@@ -286,101 +295,113 @@ class ImageFetcher extends DataLogger
      * @param string $TYPE
      * @param string $IMAGE_PATH
      * @return array
-     * @throws \Facebook\Exceptions\FacebookSDKException
      */
     public function fetchSaveTransform($fb, $TYPE, $IMAGE_PATH)
     {
 
         $FB_helper = new FacebookHelper();
         $comment_info = $FB_helper->firstCommandFromLastPost($fb);
+        if (!empty($comment_info)) {
+            $CI = new CommandInterpreter();
+            $result = $CI->identifyCommand($comment_info['text']);
 
-        $CI = new CommandInterpreter();
-        $result = $CI->identifyCommand($comment_info['text']);
+            $tags = array();
+            $keywords = array();
 
-        $tags = array();
-        $keywords = array();
-
-        $inform = '';
-        $method_params = '';
-        // Use commands given in comment
-        if ($result) {
-            // invalid
-            if ($result['output']) {
-                $inform = $result['output'];
-            } else {
-                if ($result['command'] == 'keyword') {
-                    $keywords = $result['params'];
-                } elseif ($result['command'] == 'tag') {
-                    $tags = $result['params'];
+            $inform = '';
+            $method_params = '';
+            // Use commands given in comment
+            if (!empty($result)) {
+                // invalid
+                if ($result['output']) {
+                    $inform = $result['output'];
+                } else {
+                    if ($result['command'] == 'keyword') {
+                        $keywords = $result['params'];
+                    } elseif ($result['command'] == 'tag') {
+                        $tags = $result['params'];
+                    }
                 }
             }
-        }
 
-        $ImgFetcher = new ImageFetcher();
-        $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, $tags, $keywords);
-        // search failed
-        if (!$IMAGE_LINK) {
-            // if failed search had tag or keyword
-            if (isset($tags) || isset($keywords)) {
-                // will search randomly on its own
-                $inform = 'Valid command, but found no results.';
-                $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, [], []);
+            $ImgFetcher = new ImageFetcher();
+            $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, $tags, $keywords);
+            // search failed
+            if (empty($IMAGE_LINK)) {
+                // if failed search had tag or keyword
+                if (isset($tags) || isset($keywords)) {
+                    // will search randomly on its own
+                    $inform = 'Valid command, but found no results.';
+                    $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, [], []);
+                }
             }
-        }
 
-        try {
-            if (!empty($IMAGE_LINK)) {
+            try {
+                if (!empty($IMAGE_LINK)) {
 
-                /** @var DeviantImage $data */
-                $data = $ImgFetcher->getImageData($IMAGE_LINK);
+                    /** @var DeviantImage $data */
+                    $data = $ImgFetcher->getImageData($IMAGE_LINK);
+
+                    if (isset($data)) {
+                        // If not set returns Uknown
+                        $IMAGE_AUTHOR = $data->getAuthorName();
+                    }
+
+                    $true_url = $ImgFetcher->directURL($data);
+
+                    if (empty($true_url)) {
+                        $message = 'Image link: '.$IMAGE_LINK;
+                        $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
+                    } else {
+                        $message = 'trying with raw url: '.$IMAGE_LINK;
+                        $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
+                        $true_url = $IMAGE_LINK;
+                    }
+                    $IMAGE_PATH_NEW = 'debug/test/original-image.jpg';
+
+                    $success = $ImgFetcher->saveImageLocally($true_url, $IMAGE_PATH_NEW);
+                    if ($success) {
+                        // configure with favored image driver (gd by default)
+                        Image::configure(array('driver' => 'imagick'));
+
+                        /** @var \Intervention\Image\Image $img */
+                        $img = Image::make($IMAGE_PATH_NEW);
+
+                        $ImgTrans = new ImageTransformer();
+
+                        // Transform only once
+                        $TRANSFORM_TIMES = 1;
+                        $method_params = $ImgTrans->transformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, $TRANSFORM_TIMES);
+                    } else {
+                        $message = 'unable to save image';
+                        $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
+                    }
+                } else {
+                    $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__, 1);
+                }
+
+                $ImageClassify = new ImageClassifier();
 
                 if (isset($data)) {
-                    // If not set returns Uknown
-                    $IMAGE_AUTHOR = $data->getAuthorName();
-                }
-
-                $true_url = $ImgFetcher->directURL($data);
-
-                if (empty($true_url)) {
-                    $message = 'Image link: '.$IMAGE_LINK;
+                    return array(
+                        'safety' => $data->getSafety(),
+                        'post_title' => $ImageClassify->getPostTitle($method_params, $comment_info, $inform),
+                        'post_comment' => $ImageClassify->getPostComment($IMAGE_LINK, $IMAGE_AUTHOR),
+                        'comment' => $ImageClassify->getComment($data),
+                        'comment_photo' => $ImageClassify->getPhoto($data)
+                    );
+                } else {
+                    $message =  'no safety: '. $data->getUrl();
                     $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
                 }
-
-                $IMAGE_PATH_NEW = 'debug/test/original-image.jpg';
-
-                $ImgFetcher->saveImageLocally($true_url, $IMAGE_PATH_NEW);
-
-                // configure with favored image driver (gd by default)
-                Image::configure(array('driver' => 'imagick'));
-
-                $img = Image::make($IMAGE_PATH_NEW);
-
-                $ImgTrans = new ImageTransformer();
-
-                // Transform only once
-                $TRANSFORM_TIMES = 1;
-                $method_params = $ImgTrans->transformRandomly($img, $IMAGE_PATH, $data->getSafety(), $IMAGE_LINK, $TRANSFORM_TIMES);
-            } else {
-                $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__, 1);
-            }
-
-            $ImageClassify = new ImageClassifier();
-
-            if (isset($data)) {
-                return array(
-                    'safety' => $data->getSafety(),
-                    'post_title' => $ImageClassify->getPostTitle($method_params, $comment_info, $inform),
-                    'post_comment' => $ImageClassify->getPostComment($IMAGE_LINK, $IMAGE_AUTHOR),
-                    'comment' => $ImageClassify->getComment($data),
-                    'comment_photo' => $ImageClassify->getPhoto($data)
-                );
-            } else {
-                $message =  'no safety: '. $data->getUrl();
+            } catch (Exception $e) {
+                $message =  $e->getMessage();
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
-        } catch (Exception $e) {
-            $message =  $e->getMessage();
-            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
+        } else {
+            $message =  'empty comment';
+            $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message);
         }
+        return [];
     }
 }

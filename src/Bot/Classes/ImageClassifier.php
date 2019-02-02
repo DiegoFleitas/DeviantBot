@@ -139,7 +139,7 @@ class ImageClassifier
 
     /**
      * @param DeviantImage $devimg
-     * @return mixed
+     * @return string
      */
     public function classify($devimg)
     {
@@ -184,10 +184,11 @@ class ImageClassifier
         }
 
         // if its worth to react
-        if ($type !== 'ok') {
+        if ($type !== 'n/a') {
             // Transform local reaction image
             Image::configure(array('driver' => 'imagick'));
 
+            /** @var \Intervention\Image\Image $img */
             $img = Image::make($PATH);
 
             $image_path = 'debug/test/botcomment_photo.jpg';
@@ -202,7 +203,7 @@ class ImageClassifier
 
     /**
      * @param DeviantImage $devimg
-     * @return mixed|string
+     * @return string
      */
     public function getComment($devimg)
     {

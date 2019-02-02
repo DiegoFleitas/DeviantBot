@@ -8,30 +8,30 @@
 
 class DeviantImage
 {
-    private $url;
-    private $author_name;
-    private $author_url;
-    private $provider_name;
-    private $provider_url;
-    private $safety;
-    private $pubdate;
-    private $community;
-    private $product;
-    private $tags;
-    private $copyright;
-    private $width;
-    private $height;
-    private $imagetype;
-    private $thumbnail_url;
-    private $thumbnail_width;
-    private $thumbnail_height;
-    private $thumbnail_url_150;
-    private $thumbnail_url_200h;
-    private $thumbnail_width_200h;
-    private $thumbnail_height_200h;
-    private $classification;
-    private $category;
-    private $params;
+    private $url = '';
+    private $author_name = '';
+    private $author_url = '';
+    private $provider_name = '';
+    private $provider_url = '';
+    private $safety = '';
+    private $pubdate = '';
+    private $community = '';
+    private $product = '';
+    private $tags = '';
+    private $copyright = '';
+    private $width = '';
+    private $height = '';
+    private $imagetype = '';
+    private $thumbnail_url = '';
+    private $thumbnail_width = '';
+    private $thumbnail_height = '';
+    private $thumbnail_url_150 = '';
+    private $thumbnail_url_200h = '';
+    private $thumbnail_width_200h = '';
+    private $thumbnail_height_200h = '';
+    private $classification = '';
+    private $category = '';
+    private $params = '';
 
 
     /**
@@ -70,12 +70,12 @@ class DeviantImage
         if (isset($data->category)) {
             $this->category = $data->category;
         }
-        $this->classification = null;
-        $this->params = null;
+        $this->classification = 'n/a';
+        $this->params = '';
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getUrl()
     {
@@ -83,7 +83,7 @@ class DeviantImage
     }
 
     /**
-     * @return null
+     * @param string
      */
     public function getParams()
     {
@@ -91,7 +91,7 @@ class DeviantImage
     }
 
     /**
-     * @param null $params
+     * @param string $params
      */
     public function setParams($params)
     {
@@ -99,7 +99,7 @@ class DeviantImage
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCategory()
     {
@@ -116,7 +116,7 @@ class DeviantImage
 
 
     /**
-     * @return null
+     * @return string
      */
     public function getClassification()
     {
@@ -124,7 +124,7 @@ class DeviantImage
     }
 
     /**
-     * @param null $classification
+     * @param string $classification
      */
     public function setClassification($classification)
     {
@@ -144,15 +144,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $author_name
-     */
-    public function setAuthorName($author_name)
-    {
-        $this->author_name = $author_name;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getAuthorUrl()
     {
@@ -160,15 +152,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $author_url
-     */
-    public function setAuthorUrl($author_url)
-    {
-        $this->author_url = $author_url;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getProviderName()
     {
@@ -176,15 +160,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $provider_name
-     */
-    public function setProviderName($provider_name)
-    {
-        $this->provider_name = $provider_name;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getProviderUrl()
     {
@@ -192,15 +168,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $provider_url
-     */
-    public function setProviderUrl($provider_url)
-    {
-        $this->provider_url = $provider_url;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getSafety()
     {
@@ -216,7 +184,7 @@ class DeviantImage
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getPubdate()
     {
@@ -224,15 +192,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $pubdate
-     */
-    public function setPubdate($pubdate)
-    {
-        $this->pubdate = $pubdate;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getCommunity()
     {
@@ -240,15 +200,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $community
-     */
-    public function setCommunity($community)
-    {
-        $this->community = $community;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getProduct()
     {
@@ -256,15 +208,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $product
-     */
-    public function setProduct($product)
-    {
-        $this->product = $product;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getTags()
     {
@@ -280,7 +224,7 @@ class DeviantImage
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCopyright()
     {
@@ -288,15 +232,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $copyright
-     */
-    public function setCopyright($copyright)
-    {
-        $this->copyright = $copyright;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getWidth()
     {
@@ -304,15 +240,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $width
-     */
-    public function setWidth($width)
-    {
-        $this->width = $width;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getHeight()
     {
@@ -320,15 +248,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $height
-     */
-    public function setHeight($height)
-    {
-        $this->height = $height;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getImagetype()
     {
@@ -344,7 +264,7 @@ class DeviantImage
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getThumbnailUrl()
     {
@@ -352,15 +272,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $thumbnail_url
-     */
-    public function setThumbnailUrl($thumbnail_url)
-    {
-        $this->thumbnail_url = $thumbnail_url;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getThumbnailWidth()
     {
@@ -368,15 +280,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $thumbnail_width
-     */
-    public function setThumbnailWidth($thumbnail_width)
-    {
-        $this->thumbnail_width = $thumbnail_width;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getThumbnailHeight()
     {
@@ -384,15 +288,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $thumbnail_height
-     */
-    public function setThumbnailHeight($thumbnail_height)
-    {
-        $this->thumbnail_height = $thumbnail_height;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getThumbnailUrl150()
     {
@@ -400,15 +296,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $thumbnail_url_150
-     */
-    public function setThumbnailUrl150($thumbnail_url_150)
-    {
-        $this->thumbnail_url_150 = $thumbnail_url_150;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getThumbnailUrl200h()
     {
@@ -416,15 +304,7 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $thumbnail_url_200h
-     */
-    public function setThumbnailUrl200h($thumbnail_url_200h)
-    {
-        $this->thumbnail_url_200h = $thumbnail_url_200h;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getThumbnailWidth200h()
     {
@@ -432,27 +312,10 @@ class DeviantImage
     }
 
     /**
-     * @param mixed $thumbnail_width_200h
-     */
-    public function setThumbnailWidth200h($thumbnail_width_200h)
-    {
-        $this->thumbnail_width_200h = $thumbnail_width_200h;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getThumbnailHeight200h()
     {
         return $this->thumbnail_height_200h;
     }
-
-    /**
-     * @param mixed $thumbnail_height_200h
-     */
-    public function setThumbnailHeight200h($thumbnail_height_200h)
-    {
-        $this->thumbnail_height_200h = $thumbnail_height_200h;
-    }
-
 }

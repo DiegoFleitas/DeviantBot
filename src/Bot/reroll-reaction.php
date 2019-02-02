@@ -20,6 +20,8 @@ use Intervention\Image\ImageManagerStatic as Image;
 Image::configure(array('driver' => 'imagick'));
 
 $image_path = 'resources/reactions/botcomment_photo.jpg';
+
+/** @var \Intervention\Image\Image $img */
 $img = Image::make($image_path);
 
 $image_path = 'debug/test/botcomment_photo.jpg';

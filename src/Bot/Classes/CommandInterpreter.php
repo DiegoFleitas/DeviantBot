@@ -80,87 +80,109 @@ class CommandInterpreter extends DataLogger
     public function identifyCommand($_COMMENT)
     {
 
-        $length = strlen($_COMMENT);
-        $comment = S::create($_COMMENT);
-        if ($length <= $this->getMaxlength() && $length > $this->getMinlength()) {
-            try {
-                $message = 'identifying [' . $_COMMENT . ']';
-                $this->logdata($message);
+        if (!empty($_COMMENT)) {
+            /** @var Stringy\Stringy $comment */
+            $comment = S::create($_COMMENT);
 
-                // let silly people use it too
-                $comment = $comment->trim();
-                $comment = $comment->collapseWhitespace();
-                // Might need to change this to accept $comment->isAlphanumeric() too in the future
-                $non_space = str_replace(' ', '', $comment);
-                $alpha = S::create($non_space)->isAlpha();
-                if ($alpha) {
-                    // Returns an array with a maximum of maxwords elements
-                    $tokens = explode($this->getSeparator(), $comment, $this->getMaxwords());
-                    if (count($tokens) >= $this->getMinwords()) {
-                        $command = $this->isCommand($tokens[0]);
-                        if ($command) {
-                            $result = $this->validateCommand($tokens);
-                            if ($result['success']) {
-                                $message = 'identified command [' . $result['command'] . '] params [' .  implode(' ', $result['params']) . ']';
-                                $this->logdata($message);
+            $length = strlen($_COMMENT);
+            $isTooLong = $length > $this->getMaxlength();
+            $isTooShort = $length < $this->getMinlength();
+            if (!$isTooLong && !$isTooShort) {
+                try {
+                    $message = 'identifying [' . $_COMMENT . ']';
+                    $this->logdata($message);
 
-                                return array(
-                                    'command' => $result['command'],
-                                    'params' => $result['params'],
-                                );
+                    // let silly people use it too
+                    $comment = $comment->trim();
+                    $comment = $comment->collapseWhitespace();
+                    // Might need to change this to accept $comment->isAlphanumeric() too in the future
+                    $non_space = str_replace(' ', '', $comment);
+
+                    /** @var Stringy\Stringy $alpha */
+                    $alpha = S::create($non_space)->isAlpha();
+                    if ($alpha) {
+                        // Returns an array with a maximum of maxwords elements
+                        $tokens = explode($this->getSeparator(), $comment, $this->getMaxwords());
+                        if (count($tokens) >= $this->getMinwords()) {
+                            $command = $this->whichCommand($tokens[0]);
+                            if (!empty($command)) {
+
+                                /** @var array $result */
+                                $result = $this->validateCommand($tokens);
+                                if (!empty($result) && $result['success']) {
+                                    $message = 'identified command [' . $result['command'] . '] params [' .  implode(' ', $result['params']) . ']';
+                                    $this->logdata($message);
+
+                                    return [
+                                        'command' => $result['command'],
+                                        'params'  => $result['params']
+                                    ];
+                                } else {
+                                    $message = 'invalid command. '.$result['reason'];
+                                    $this->logdata($message);
+                                }
                             } else {
-                                $message = 'invalid command. '.$result['reason'];
+                                $message = 'command does not exist';
                                 $this->logdata($message);
                             }
                         } else {
-                            $message = 'command does not exist';
+                            $message = 'command unrecognized';
                             $this->logdata($message);
                         }
                     } else {
-                        $message = 'command unrecognized';
+                        // comment contained characters that are not addmited
+                        $message = 'command is not well formatted';
                         $this->logdata($message);
                     }
+
+                    return [
+                        'command' => $result['command'],
+                        'params'  => $result['para ms'],
+                        'output'  => $message
+                    ];
+                } catch (Exception $e) {
+                    $data = $e->getMessage();
+                    $this->logdata($data, 1);
+                }
+            } else {
+                if ($isTooLong) {
+                    $comment->truncate($this->getMaxlength(), '...');
+                    $message = 'Too long. Comment: '.$comment;
+                    $this->logdata($message);
                 } else {
-                    // comment contained characters that are not addmited
-                    $message = 'command is not well formatted';
+                    $comment->truncate($this->getMaxlength(), '...');
+                    $message = 'Too short. Comment: '.$comment;
                     $this->logdata($message);
                 }
-
-                return array(
-                    'command' => $result['command'],
-                    'params' => $result['params'],
-                    'output' => $message
-                );
-            } catch (Exception $e) {
-                $data = $e->getMessage();
-                $this->logdata($data, 1);
             }
         } else {
-            $comment->truncate($this->getMaxlength(), '...');
-            $message = 'Too long/short. Comment: '.$comment;
+            $message = 'Empty comment.';
             $this->logdata($message);
         }
+
+        return [];
     }
 
     /**
      * @param string $word
-     * @return bool|mixed
+     * @return string
      */
-    public function isCommand($word)
+    public function whichCommand($word)
     {
 
         try {
+            /** @var array $available */
             $available = $this->getAvailableCommands();
             $key = array_search($word, $available);
-            // 0 is a key you know
+            // 0 is a possible key
             if ($key !== false) {
                 return $available[$key];
             }
-            return false;
         } catch (Exception $e) {
             $data = $e->getMessage();
             $this->logdata($data, 1);
         }
+        return '';
     }
 
     /**
@@ -218,5 +240,6 @@ class CommandInterpreter extends DataLogger
             $data = $e->getMessage();
             $this->logdata($data, 1);
         }
+        return [];
     }
 }

@@ -19,12 +19,14 @@ $IMAGE_LINK = 'https://scontent.fmvd3-1.fna.fbcdn.net/v/t1.0-9/50085482_22382803
 $ImgFetcher = new ImageFetcher();
 
 $image_path = 'debug/test/comment_photo.jpg';
-$ImgFetcher->saveImageLocally($IMAGE_LINK, $image_path);
+$success = $ImgFetcher->saveImageLocally($IMAGE_LINK, $image_path);
+if ($success) {
+    // configure with favored image driver (gd by default)
+    Image::configure(array('driver' => 'imagick'));
 
-// configure with favored image driver (gd by default)
-Image::configure(array('driver' => 'imagick'));
+    /** @var \Intervention\Image\Image $img */
+    $img = Image::make($image_path);
 
-$img = Image::make($image_path);
-
-$ImgTrans = new ImageTransformer();
-$ImgTrans->transformRandomly($img, $image_path, "nonadult", $IMAGE_LINK, 4);
+    $ImgTrans = new ImageTransformer();
+    $ImgTrans->transformRandomly($img, $image_path, "nonadult", $IMAGE_LINK, 1);
+}

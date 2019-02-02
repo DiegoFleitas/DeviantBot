@@ -31,7 +31,7 @@ class ImageTransformer extends DataLogger
         // TODO: The optimal size for post (shared) images is 1,200 x 630 pixels.
         $img->save($path);
 
-        if (isset($result['params']) && isset($result['method'])) {
+        if (!empty($result['params']) && !empty($result['method'])) {
             return 'method: '.$result['method'].' params: '.$result['params'];
         } else {
             return '';
@@ -302,10 +302,10 @@ class ImageTransformer extends DataLogger
             array_push($params, 'none');
         }
 
-        return array(
+        return [
             'method' => $method,
             'params' => implode(',', $params)
-        );
+        ];
     }
 
     /**
@@ -332,7 +332,7 @@ class ImageTransformer extends DataLogger
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function randomCapital()
     {

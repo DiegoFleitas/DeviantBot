@@ -36,6 +36,8 @@ class FacebookHelper extends DataLogger
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
+        $message = 'something when wrong at initializing Facebook object';
+        $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
     }
 
     /**
@@ -43,6 +45,7 @@ class FacebookHelper extends DataLogger
      * @param string $POST_ID
      * @param bool $PHOTO_COMMENT
      * @param bool $COMMAND_COMMENT
+     * @return array
      */
     public function getFirstComment($fb, $POST_ID, $PHOTO_COMMENT = false, $COMMAND_COMMENT = false)
     {
@@ -78,6 +81,8 @@ class FacebookHelper extends DataLogger
                             if (!in_array($name, $blacklist)) {
                                 $text = $graphNode->getField('message');
                                 $text = strtolower($text);
+
+                                /** @var Stringy\Stringy $comment */
                                 $comment = S::create($text);
 
                                 // resources
@@ -89,10 +94,11 @@ class FacebookHelper extends DataLogger
 
                                         // return first photo comment
                                         $photo = $attachment->getField('url');
-                                        return array(
-                                            'who' => $name,
+                                        return [
+                                            'who'   => $name,
+                                            'text'  => '',
                                             'photo' => $photo
-                                        );
+                                        ];
                                     }
                                 } elseif ($COMMAND_COMMENT) {
                                     $CI = new CommandInterpreter();
@@ -102,20 +108,23 @@ class FacebookHelper extends DataLogger
                                         $message = 'comment made by: ' . $name;
                                         $this->logdata($message);
 
-                                        return array(
-                                            'who' => $name,
-                                            'text' => $text
-                                        );
+
+                                        return [
+                                            'who'   => $name,
+                                            'text'  => $text,
+                                            'photo' => ''
+                                        ];
                                     }
                                 } else {
                                     $message = 'comment made by: ' . $name;
                                     $this->logdata($message);
 
                                     // return first comment
-                                    return array(
-                                        'who' => $name,
-                                        'text' => $text
-                                    );
+                                    return [
+                                        'who'   => $name,
+                                        'text'  => $text,
+                                        'photo' => ''
+                                    ];
                                 }
                             } else {
                                 $logmessage = 'blacklisted user: ' . $name;
@@ -132,6 +141,7 @@ class FacebookHelper extends DataLogger
                 $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage, 1);
             }
         }
+        return [];
     }
 
     /**
@@ -140,7 +150,7 @@ class FacebookHelper extends DataLogger
      * @param string $COMMENT
      * @param string $COMMENT_PHOTO
      */
-    public function postCommentToReference($fb, $ID_REFERENCE, $COMMENT, $COMMENT_PHOTO)
+    public function postCommentToReference($fb, $ID_REFERENCE, $COMMENT, $COMMENT_PHOTO = '')
     {
         try {
             $data = array ();
@@ -167,11 +177,10 @@ class FacebookHelper extends DataLogger
      * @param string $POST_ID
      * @return \Facebook\GraphNodes\GraphNode
      */
+    // TODO: use this
     public function getPost($fb, $POST_ID)
     {
-
         try {
-
             /** @var $response \Facebook\FacebookResponse */
             $response = $fb->get('/'.$POST_ID);
 
@@ -180,6 +189,7 @@ class FacebookHelper extends DataLogger
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
+        return '';
     }
 
     /**
@@ -242,8 +252,7 @@ class FacebookHelper extends DataLogger
 
     /**
      * @param \Facebook\Facebook $fb
-     * @return mixed
-     * @throws \Facebook\Exceptions\FacebookSDKException
+     * @return string
      */
     public function getLastPost($fb)
     {
@@ -259,14 +268,12 @@ class FacebookHelper extends DataLogger
             $graphEdge = $response->getGraphEdge();
 //            var_dump($graphEdge->asArray());
 
-            // Iterate over all the GraphNode's returned from the edge
             /** @var $graphNode \Facebook\GraphNodes\GraphNode */
             foreach ($graphEdge as $graphNode) {
                 // avoid polls
                 $story = $graphNode->getField('story');
                 if (strpos($story, 'poll') === false) {
-                    $post_id = $graphNode->getField('id');
-                    return $post_id;
+                    return $graphNode->getField('id');
                 }
             }
 
@@ -276,54 +283,60 @@ class FacebookHelper extends DataLogger
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
+        return '';
     }
 
 
     /**
      * @param \Facebook\Facebook $fb
-     * @return mixed
-     * @throws \Facebook\Exceptions\FacebookSDKException
+     * @return array
      */
     public function firstCommentFromLastPost($fb)
     {
         $post = $this->getLastPost($fb);
 
-        $res = $this->getFirstComment($fb, $post);
+        if (!empty($post)) {
+            return $this->getFirstComment($fb, $post);
+        }
 
-        return $res;
+        return [];
     }
 
     /**
      * @param \Facebook\Facebook $fb
      * @return array
-     * @throws \Facebook\Exceptions\FacebookSDKException
      */
     public function firstCommandFromLastPost($fb)
     {
         $post = $this->getLastPost($fb);
 
         $res = $this->getFirstComment($fb, $post, false, true);
+        if (!empty($res)) {
+            //FILTER_SANITIZE_STRING: Strip tags, optionally strip or encode special characters.
+            //FILTER_FLAG_STRIP_LOW: strips bytes in the input that have a numerical value <32, most notably null bytes and other control characters such as the ASCII bell.
+            //FILTER_FLAG_STRIP_HIGH: strips bytes in the input that have a numerical value >127. In almost every encoding, those bytes represent non-ASCII characters such as ä, ¿, 堆 etc
+            $safe_comment = filter_var($res['text'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 
-        //FILTER_SANITIZE_STRING: Strip tags, optionally strip or encode special characters.
-        //FILTER_FLAG_STRIP_LOW: strips bytes in the input that have a numerical value <32, most notably null bytes and other control characters such as the ASCII bell.
-        //FILTER_FLAG_STRIP_HIGH: strips bytes in the input that have a numerical value >127. In almost every encoding, those bytes represent non-ASCII characters such as ä, ¿, 堆 etc
-        $safe_comment = filter_var($res['text'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-
-        $res['text'] = strtolower($safe_comment);
-        return $res;
+            $res['text'] = strtolower($safe_comment);
+            return $res;
+        } else {
+            return [];
+        }
     }
 
     /**
      * @param \Facebook\Facebook $fb
-     * @return mixed
-     * @throws \Facebook\Exceptions\FacebookSDKException
+     * @return array
      */
+    // TODO use this
     public function firstPhotocommentFromLastPost($fb)
     {
         $post = $this->getLastPost($fb);
 
-        $raw_comment = $this->getFirstComment($fb, $post, true, false);
+        if (!empty($post)) {
+            return $this->getFirstComment($fb, $post, true, false);
+        }
 
-        return $raw_comment;
+        return [];
     }
 }
