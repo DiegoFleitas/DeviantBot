@@ -28,7 +28,7 @@ class FacebookHelper extends DataLogger
             $fb = new \Facebook\Facebook([
                 'app_id' => $_APP_ID,
                 'app_secret' => $_APP_SECRET,
-                'default_graph_version' => 'v2.10',
+                'default_graph_version' => 'v3.2',
             ]);
             $fb->setDefaultAccessToken($_ACCESS_TOKEN_DEBUG);
             return $fb;
@@ -51,9 +51,9 @@ class FacebookHelper extends DataLogger
     {
         if (!empty($POST_ID)) {
             try {
-                // after underscore
-                // TODO: whats the deal with this
-                $POST_ID = substr($POST_ID, strpos($POST_ID, "_") + 1);
+                // TODO: seems to be needed depending the version I'm using
+//                (#12) singular statuses API is deprecated for versions v2.4 and higher
+//                $POST_ID = substr($POST_ID, strpos($POST_ID, "_") + 1);
 
                 $imagequery = '';
                 if ($PHOTO_COMMENT) {
@@ -65,7 +65,6 @@ class FacebookHelper extends DataLogger
 
                 /** @var $graphEdge \Facebook\GraphNodes\GraphEdge */
                 $graphEdge = $response->getGraphEdge();
-                var_dump($graphEdge->asArray());
 
                 // Iterate over all the GraphNode's returned from the edge
                 /** @var $graphNode \Facebook\GraphNodes\GraphNode */
