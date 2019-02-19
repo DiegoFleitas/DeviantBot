@@ -6,6 +6,8 @@
  * Time: 11:52 PM
  */
 
+namespace DeviantBot;
+
 require_once 'Classes\DataLogger.php';
 
 class ImageTransformer extends DataLogger

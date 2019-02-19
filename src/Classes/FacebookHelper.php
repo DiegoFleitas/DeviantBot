@@ -6,9 +6,7 @@
  * Time: 11:47 PM
  */
 
-require_once realpath(__DIR__ . '../../../..'). '\vendor\autoload.php';
-require_once 'resources/secrets.php';
-require_once 'Classes/CommandInterpreter.php';
+namespace DeviantBot;
 
 use Stringy\Stringy as S;
 
@@ -81,7 +79,7 @@ class FacebookHelper extends DataLogger
                                 $text = $graphNode->getField('message');
                                 $text = strtolower($text);
 
-                                /** @var Stringy\Stringy $comment */
+                                /** @var \Stringy\Stringy $comment */
                                 $comment = S::create($text);
 
                                 // resources
@@ -217,7 +215,7 @@ class FacebookHelper extends DataLogger
             $post_id = $graphNode->getField('id');
             // if safe comment the author and original image
             if ($SAFETY == 'nonadult') {
-                $this->postCommentToReference($fb, $post_id, $POST_COMMENT, 'debug/test/original-image.jpg');
+                $this->postCommentToReference($fb, $post_id, $POST_COMMENT, 'C:\xampp\htdocs\FacebookBot\src\resources\original-image.jpg');
             } else {
                 // unsafe, no pic
                 $POST_COMMENT = '[NSFW] '.$POST_COMMENT;

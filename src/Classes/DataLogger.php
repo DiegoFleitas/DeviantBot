@@ -6,6 +6,8 @@
  * Time: 3:44 PM
  */
 
+namespace DeviantBot;
+
 class DataLogger
 {
     /**
@@ -30,6 +32,6 @@ class DataLogger
     public function logxml($type, $data)
     {
         // daily log files
-        file_put_contents('debug/test/test-response-'.strtolower($type).'.xml', $data);
+        file_put_contents('resources/responses/test-response-'.strtolower($type).'.xml', $data);
     }
 }

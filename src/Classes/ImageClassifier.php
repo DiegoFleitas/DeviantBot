@@ -6,6 +6,8 @@
  * Time: 9:46 PM
  */
 
+namespace DeviantBot;
+
 use Intervention\Image\ImageManagerStatic as Image;
 
 class ImageClassifier
@@ -181,13 +183,13 @@ class ImageClassifier
 
         $type = $this->classify($devimg);
         if ($type == 'bad') {
-            $PATH = 'resources/reactions/negative/'. mt_rand(1, 47).'.jpg';
+            $PATH = 'C:/xampp/htdocs/FacebookBot/src/resources/reactions/negative/'. mt_rand(1, 47).'.jpg';
         } elseif ($type == 'nsfw') {
-            $PATH = 'resources/reactions/tempted/'. mt_rand(1, 27).'.jpg';
+            $PATH = 'C:/xampp/htdocs/FacebookBot/src/resources/reactions/tempted/'. mt_rand(1, 27).'.jpg';
         }
 
         // if its worth to react
-        if ($type !== 'n/a') {
+        if (!empty($PATH)) {
             // Transform local reaction image
             Image::configure(array('driver' => 'imagick'));
 

@@ -3,8 +3,7 @@
     "description": "DeviantArt Facebook Bot",
     "authors": [
         {
-            "name": "Diego Fleitas",
-            "email": "diego.fleitas68@gmail.com"
+            "name": "Diego Fleitas"
         }
     ],
     "require": {
@@ -21,6 +20,16 @@
         "phpunit/phpunit": "~4.0",
         "mockery/mockery": "~0.8",
         "guzzlehttp/guzzle": "~5.0"
+    },
+    "autoload": {
+      "psr-4": {
+        "DeviantBot\\": "src/"
+      }
+    },
+    "autoload-dev": {
+      "psr-4": {
+        "DeviantBot\\Tests\\": "tests/"
+      }
     },
     "suggest": {
         "paragonie/random_compat": "Provides a better CSPRNG option in PHP 5",

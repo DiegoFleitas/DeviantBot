@@ -6,6 +6,8 @@
  * Time: 9:45 PM
  */
 
+namespace DeviantBot;
+
 use Intervention\Image\ImageManagerStatic as Image;
 
 require_once('DeviantImage.php');
@@ -359,7 +361,7 @@ class ImageFetcher extends DataLogger
                     $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
                 }
 
-                $IMAGE_PATH_NEW = 'debug/test/original-image.jpg';
+                $IMAGE_PATH_NEW = 'C:\xampp\htdocs\FacebookBot\src\resources\original-image.jpg';
 
                 $success = $ImgFetcher->saveImageLocally($true_url, $IMAGE_PATH_NEW);
                 if ($success) {

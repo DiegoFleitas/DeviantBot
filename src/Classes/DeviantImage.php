@@ -6,6 +6,8 @@
  * Time: 9:30 PM
  */
 
+namespace DeviantBot;
+
 class DeviantImage
 {
     private $url = '';

@@ -6,17 +6,13 @@
  * Time: 2:48 PM
  */
 
-require_once realpath( __DIR__ . '/../..' ) . '/vendor/autoload.php';
+require __DIR__ .'/../vendor/autoload.php';
 require_once 'resources/secrets.php';
-require_once 'ImageTransformer.php';
-require_once 'ImageFetcher.php';
-require_once 'FacebookHelper.php';
-require_once 'DataLogger.php';
 
-$dt = new DataLogger();
+$dt = new DeviantBot\DataLogger();
 $dt->logdata('[LASTPOST]');
 
-$FB_helper = new FacebookHelper();
+$FB_helper = new DeviantBot\FacebookHelper();
 $fb = $FB_helper->init($_APP_ID, $_APP_SECRET, $_ACCESS_TOKEN_DEBUG);
 
 $post = $FB_helper->getLastPost($fb);

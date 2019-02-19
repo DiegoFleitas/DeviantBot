@@ -6,9 +6,8 @@
  * Time: 1:26 AM
  */
 
-require_once realpath(__DIR__ . '/../..') . '/vendor/autoload.php';
-
-require_once 'ImageFetcher.php';
+require __DIR__ .'/../vendor/autoload.php';
+require_once 'resources/secrets.php';
 
 use Intervention\Image\ImageManagerStatic as Image;
 
@@ -25,5 +24,5 @@ $image_path = 'resources/reactions/botcomment_photo.jpg';
 $img = Image::make($image_path);
 
 $image_path = 'debug/test/botcomment_photo.jpg';
-$ImgTrans = new ImageTransformer();
+$ImgTrans = new DeviantBot\ImageTransformer();
 $ImgTrans->transformRandomly($img, $image_path, "nonadult", 'reaction-reroll', 1);

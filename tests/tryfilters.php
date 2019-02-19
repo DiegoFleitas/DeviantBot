@@ -6,9 +6,8 @@
  * Time: 1:26 AM
  */
 
-require_once realpath( __DIR__ . '/../..' ) . '/vendor/autoload.php';
-
-require_once 'ImageFetcher.php';
+require __DIR__ .'/../vendor/autoload.php';
+require_once 'resources/secrets.php';
 
 use Intervention\Image\ImageManagerStatic as Image;
 
@@ -25,12 +24,12 @@ use Intervention\Image\ImageManagerStatic as Image;
 $FORCE_FILTER = 14; //TEXT
 //$FORCE_FILTER = 15; //CROP
 //$FORCE_FILTER = 16; //FRY
-$image_path = 'debug/test/filter_'.$FORCE_FILTER.'.jpg';
+$image_path = 'tests/filters/filter_'.$FORCE_FILTER.'.jpg';
 
 // REMOTE
 $IMAGE_LINK = 'https://scontent.fmvd3-1.fna.fbcdn.net/v/t1.0-9/50085482_2238280363055084_5496124642005352448_o.jpg?_nc_cat=108&_nc_ht=scontent.fmvd3-1.fna&oh=1d7d19f12b024de8f3280079caba4fd1&oe=5CB40E70';
 $IMAGE_LINK = 'https://cdn.discordapp.com/attachments/438590624162250754/539103298339340293/what_the_fuck4.jpg';
-$ImgFetcher = new ImageFetcher();
+$ImgFetcher = new DeviantBot\ImageFetcher();
 $success = $ImgFetcher->saveImageLocally($IMAGE_LINK, $image_path);
 if ($success) {
     // LOCAL
@@ -42,7 +41,7 @@ if ($success) {
     /** @var \Intervention\Image\Image $img */
     $img = Image::make($image_path);
 
-    $ImgTrans = new ImageTransformer();
+    $ImgTrans = new DeviantBot\ImageTransformer();
     $ImgTrans->transformRandomly($img, $image_path, "nonadult", $IMAGE_LINK, 1, $FORCE_FILTER);
 }
 

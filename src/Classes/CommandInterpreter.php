@@ -6,6 +6,8 @@
  * Time: 5:11 PM
  */
 
+namespace DeviantBot;
+
 use Stringy\Stringy as S;
 
 class CommandInterpreter extends DataLogger
@@ -81,7 +83,7 @@ class CommandInterpreter extends DataLogger
     {
 
         if (!empty($_COMMENT)) {
-            /** @var Stringy\Stringy $comment */
+            /** @var \Stringy\Stringy $comment */
             $comment = S::create($_COMMENT);
 
             $length = strlen($_COMMENT);

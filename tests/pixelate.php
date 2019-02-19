@@ -6,9 +6,8 @@
  * Time: 1:26 AM
  */
 
-require_once realpath( __DIR__ . '/../..' ) . '/vendor/autoload.php';
-
-require_once 'ImageFetcher.php';
+require __DIR__ .'/../vendor/autoload.php';
+require_once 'resources/secrets.php';
 
 use Intervention\Image\ImageManagerStatic as Image;
 
@@ -16,7 +15,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 // Pixelate remote image
 
 $IMAGE_LINK = 'https://www.deviantart.com/mirodesign/art/SILKY-TOUCH-705653522';
-$ImgFetcher = new ImageFetcher();
+$ImgFetcher = new DeviantBot\ImageFetcher();
 $data = $ImgFetcher->getImageData($IMAGE_LINK);
 
 $true_url = $ImgFetcher->directURL($data);
@@ -38,6 +37,6 @@ if ($success) {
     /** @var \Intervention\Image\Image $img */
     $img = Image::make($image_path);
 
-    $ImgTrans = new ImageTransformer();
+    $ImgTrans = new DeviantBot\ImageTransformer();
     $ImgTrans->transformRandomly($img, $image_path, $data->getSafety(), $IMAGE_LINK, 1);
 }

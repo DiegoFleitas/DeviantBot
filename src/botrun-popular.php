@@ -60,28 +60,24 @@
 //    https://www.deviantart.com/newest/?q=BERSERK+#oc => https://backend.deviantart.com/rss.xml?&q=berserk sort:time tag:oc
 //    https://www.deviantart.com/newest/?q=#OC+#BERSERK => https://backend.deviantart.com/rss.xml?&q=sort:time tag:oc tag:berserk
 
-require_once realpath(__DIR__ . '/../..'). '/vendor/autoload.php';
-require_once 'resources\secrets.php';
-require_once 'Classes\ImageTransformer.php';
-require_once 'Classes\ImageFetcher.php';
-require_once 'Classes\FacebookHelper.php';
-require_once 'Classes\DataLogger.php';
+require __DIR__ .'/../vendor/autoload.php';
+require_once 'resources/secrets.php';
 
 
 // TODO: A) Being able to comment a DeviantArt link and get it transformed randomly in the comments.
 // TODO: C) Being able to transform randomly any image uploaded as comment
 
-$dt = new DataLogger();
+$dt = new DeviantBot\DataLogger();
 $dt->logdata('[POPULAR]');
 
 // Make post with any random image
-$FB_helper = new FacebookHelper();
+$FB_helper = new DeviantBot\FacebookHelper();
 $fb = $FB_helper->init($_APP_ID, $_APP_SECRET, $_ACCESS_TOKEN_DEBUG);
 
 
-$IMAGE_PATH = 'debug/test/transformed_image.jpg';
+$IMAGE_PATH = 'resources/transformed_image.jpg';
 
-$ImgFetcher = new ImageFetcher();
+$ImgFetcher = new DeviantBot\ImageFetcher();
 try {
     $result = $ImgFetcher->fetchSaveTransform($fb, 'POPULAR', $IMAGE_PATH);
     $SAFETY = $result['safety'];
