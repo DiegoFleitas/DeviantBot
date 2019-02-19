@@ -130,7 +130,7 @@ class FacebookHelper extends DataLogger
                         }
                     }
                 }
-            } catch (Facebook\Exceptions\FacebookSDKException $e) {
+            } catch (\Facebook\Exceptions\FacebookSDKException $e) {
                 $logmessage = 'Facebook SDK returned an error: ' . $e->getMessage();
                 $this->logdata('[' . __METHOD__ . ' ERROR] ' . __FILE__ . ':' . __LINE__ . ' ' . $logmessage, 1);
             }
@@ -160,7 +160,7 @@ class FacebookHelper extends DataLogger
             // $ID_REFERENCE Could either be a post or a comment
             /** @var $response \Facebook\FacebookResponse */
             $response = $fb->post($ID_REFERENCE.'/comments', $data);
-        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
@@ -171,7 +171,6 @@ class FacebookHelper extends DataLogger
      * @param string $POST_ID
      * @return \Facebook\GraphNodes\GraphNode
      */
-    // TODO: use this
     public function getPost($fb, $POST_ID)
     {
         try {
@@ -179,7 +178,7 @@ class FacebookHelper extends DataLogger
             $response = $fb->get('/'.$POST_ID);
 
             return $response->getGraphNode();
-        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
@@ -238,7 +237,7 @@ class FacebookHelper extends DataLogger
             } else {
                 $this->logdata('the file couldn\'t deleted.');
             }
-        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
@@ -273,7 +272,7 @@ class FacebookHelper extends DataLogger
 
             $message = 'No valid post found.';
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
-        } catch (Facebook\Exceptions\FacebookSDKException $e) {
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $message = 'Facebook SDK returned an error: ' . $e->getMessage();
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         }
@@ -322,7 +321,6 @@ class FacebookHelper extends DataLogger
      * @param \Facebook\Facebook $fb
      * @return array
      */
-    // TODO use this
     public function firstPhotocommentFromLastPost($fb)
     {
         $post = $this->getLastPost($fb);

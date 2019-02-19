@@ -8,8 +8,6 @@
 
 namespace DeviantBot;
 
-require_once 'Classes\DataLogger.php';
-
 class ImageTransformer extends DataLogger
 {
 
