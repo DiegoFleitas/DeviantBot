@@ -143,6 +143,9 @@ class ImageClassifier
      */
     public function classify($devimg)
     {
+        //FIXME start using description too
+//        ex: https://www.deviantart.com/zeronis/art/Black-Heart-Valentine-2B-785978771?fbclid=IwAR3-xBPnfmVeMnOm0CF2wc3mJeTN5LdfniMgahOvw6x7SSzEcgHzwuuulXA
+//        "NSFW" and "18+" on it
 
         if (null !== $devimg->getClassification()) {
             return $devimg->getClassification();
