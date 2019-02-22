@@ -37,6 +37,10 @@ class ImageClassifier
         $terrible = array(
 
             //UNSAFE
+            'erocosplay',
+            'eroticcosplay',
+            'erotic',
+            'ero',
             'boobs',
             'breasts',
             'tits',
