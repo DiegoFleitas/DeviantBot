@@ -200,7 +200,7 @@ class ImageClassifier
             /** @var \Intervention\Image\Image $img */
             $img = Image::make($PATH);
 
-            $image_path = 'debug/test/botcomment_photo.jpg';
+            $image_path = 'C:\xampp\htdocs\FacebookBot\tests\test\botcomment_photo.jpg';
             $ImgTrans = new ImageTransformer();
             $ImgTrans->transformRandomly($img, $image_path, 'nonadult', 'reaction-reroll', 1);
 

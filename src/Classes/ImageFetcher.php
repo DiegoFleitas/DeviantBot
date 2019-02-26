@@ -333,6 +333,7 @@ class ImageFetcher extends DataLogger
 
         $ImgFetcher = new ImageFetcher();
         $IMAGE_LINK = $ImgFetcher->getRandom($TYPE, $tags, $keywords);
+//        $IMAGE_LINK = 'https://disharmonica.deviantart.com/art/Cosplay-Saber-Nero-787204697';
         // search failed
         if (empty($IMAGE_LINK)) {
             // if failed search had tag or keyword
