@@ -96,3 +96,5 @@ modules.xml
 # Exclude secrets
 secrets.php
 logs.log
+src/debug/*
+src/debug/posted/*

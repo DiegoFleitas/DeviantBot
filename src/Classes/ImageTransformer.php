@@ -11,13 +11,9 @@ namespace DeviantBot;
 class ImageTransformer extends DataLogger
 {
 
-    private $filter_pool = [
-
-    ];
-
     public function randomFilter()
     {
-        return $this->filter_pool[array_rand($this->filter_pool)];
+        return mt_rand(1, 17);
     }
 
     /**
@@ -115,8 +111,8 @@ class ImageTransformer extends DataLogger
                     // draw a red line with 5 pixel width
                     $img->line($posx1, $posy1, $posx2, $posy2, function ($draw) {
                         /** @var \Intervention\Image\Imagick\Shapes\LineShape $draw */
-                        $draw->color('#f00');
-                        $draw->width(5);
+                        $draw->color($this->randomHexColor());
+                        $draw->width(mt_rand(5, 50));
                     });
                 }
 
@@ -265,7 +261,7 @@ class ImageTransformer extends DataLogger
                     $font->file(__DIR__ . 'resources\fonts\lucida');
                     $font->size(mt_rand(24, 60));
                     // hacker green
-                    $font->color('#20c20e');
+                    $font->color($this->randomHexColor());
                     $font->align('center');
                     $font->valign('top');
                     $font->angle(mt_rand(0, 360));
@@ -332,6 +328,14 @@ class ImageTransformer extends DataLogger
             'method' => $method,
             'params' => implode(',', $params)
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function randomHexColor()
+    {
+        return '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
     }
 
     /**
