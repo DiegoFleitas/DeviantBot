@@ -11,6 +11,15 @@ namespace DeviantBot;
 class ImageTransformer extends DataLogger
 {
 
+    private $filter_pool = [
+
+    ];
+
+    public function randomFilter()
+    {
+        return $this->filter_pool[array_rand($this->filter_pool)];
+    }
+
     /**
      * @param \Intervention\Image\Image $img
      * @param string $path
@@ -71,6 +80,11 @@ class ImageTransformer extends DataLogger
                     $method = 'flip horizontally';
                     $img->flip('h');
                 }
+
+                // add another filter since this is boring on its own
+                if (!$forcefilter) {
+                    $this->randomTransformation($img, null, $this->randomFilter());
+                }
                 break;
 
             case 2:
@@ -105,6 +119,12 @@ class ImageTransformer extends DataLogger
                         $draw->width(5);
                     });
                 }
+
+                // add another filter since this is boring on its own
+                if (!$forcefilter) {
+                    $this->randomTransformation($img, null, $this->randomFilter());
+                }
+
                 break;
 
             case 4:
@@ -120,6 +140,7 @@ class ImageTransformer extends DataLogger
                     // 75% chance to reroll
                     if (mt_rand(0, 3)) {
                         $this->randomTransformation($img);
+                        break;
                     }
                 }
 
@@ -141,6 +162,7 @@ class ImageTransformer extends DataLogger
                     // 75% chance to reroll
                     if (mt_rand(0, 3)) {
                         $this->randomTransformation($img);
+                        break;
                     }
                 }
 
@@ -172,6 +194,7 @@ class ImageTransformer extends DataLogger
                 if (!$forcefilter) {
                     // 100% chance to reroll since Andi didn't like this filter
                     $this->randomTransformation($img);
+                    break;
                 }
 
                 // 100 being the full opacity
@@ -215,18 +238,20 @@ class ImageTransformer extends DataLogger
                 $width = $img->getWidth();
                 $height = $img->getHeight();
 
-                // upper left
-//                $posx = mt_rand(0 , 0);
-//                $posy = mt_rand(0 , 0);
-                // lower left
-//                $posx = mt_rand(0 , 0);
-//                $posy = mt_rand($height , $height);
-                // upper right
-//                $posx = mt_rand($width , $width);
-//                $posy = mt_rand(0 , 0);
-                // lower right
-//                $posx = mt_rand($width , $width);
-//                $posy = mt_rand($height , $height);
+                /**
+                 upper left
+                $posx = mt_rand(0 , 0);
+                $posy = mt_rand(0 , 0);
+                 lower left
+                $posx = mt_rand(0 , 0);
+                $posy = mt_rand($height , $height);
+                 upper right
+                $posx = mt_rand($width , $width);
+                $posy = mt_rand(0 , 0);
+                 lower right
+                $posx = mt_rand($width , $width);
+                $posy = mt_rand($height , $height);
+                 */
 
                 // random
                 $posx = mt_rand(0, $width);
@@ -249,11 +274,6 @@ class ImageTransformer extends DataLogger
 
             case 15:
                 $method = 'crop';
-                if (!$forcefilter) {
-                    //FIXME: 100% chance to reroll since I don't want to think of way to solve
-                    // the problem of not picking uninteresting regions right now
-                    $this->randomTransformation($img);
-                }
 
                 $width = $img->getWidth();
                 $height = $img->getHeight();
@@ -270,6 +290,12 @@ class ImageTransformer extends DataLogger
 
                 // crop image
                 $img->crop($posx1, $posy1, $posy2, $posx2);
+
+                // add another filter since this is boring on its own
+                if (!$forcefilter) {
+                    $this->randomTransformation($img, null, $this->randomFilter());
+                }
+
                 break;
 
             case 16:

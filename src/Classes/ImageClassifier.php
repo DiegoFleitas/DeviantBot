@@ -225,8 +225,7 @@ class ImageClassifier
                 '[|°-°|]'
             );
 
-            $rnd_index = mt_rand(0, count($negative) - 1);
-            $comment = $negative[$rnd_index];
+            $comment = $negative[array_rand($negative)];
         } elseif ($type == 'nsfw') {
             $tempted = array(
                 'Oof',
@@ -234,8 +233,7 @@ class ImageClassifier
                 '[|°v°|]'
             );
 
-            $rnd_index = mt_rand(0, count($tempted) - 1);
-            $comment = $tempted[$rnd_index];
+            $comment = $tempted[array_rand($tempted)];
         }
 
         return $comment;
