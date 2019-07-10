@@ -28,7 +28,7 @@ class ImageFetcher extends DataLogger
     public function buildRSSURL($dailydeviations, $popular, $tags, $keywords)
     {
 
-        $url_rss = 'http://backend.deviantart.com/rss.xml?&q=';
+        $url_rss = 'https://backend.deviantart.com/rss.xml?&q=';
 
         if ($dailydeviations) {
             // Daily deviations
@@ -63,7 +63,7 @@ class ImageFetcher extends DataLogger
             $params .= 'sort:time ';
         }
 
-        $url_rss .= rawurlencode($params).'&=';
+        $url_rss .= rawurlencode($params).'&=,';
 
         // logging
         $message = 'fetching [' . $url_rss . ']';
@@ -84,31 +84,48 @@ class ImageFetcher extends DataLogger
 
         $curl = curl_init();
 
-        //    Internet Explorer 6 on Windows XP SP2
-        $agent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)';
+//        curl_setopt($curl, CURLOPT_URL, $url);
+//        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+//        curl_setopt($curl, CURLOPT_ENCODING, "");
+//        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+//        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+//        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+//        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
+//        curl_setopt($curl, CURLOPT_POSTFIELDS, "");
 
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_ENCODING, "");
-        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
-        curl_setopt($curl, CURLOPT_POSTFIELDS, "");
-        curl_setopt($curl, CURLOPT_USERAGENT, $agent);
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Cache-Control: max-age=0",
+                "Connection: keep-alive",
+                "Upgrade-Insecure-Requests: 1",
+                "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0",
+                "cache-control: no-cache"
+            ),
+        ));
+
 
         $response = curl_exec($curl);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $headers = curl_getinfo($curl, CURLINFO_HEADER_OUT);
         $err = curl_error($curl);
 
         curl_close($curl);
 
         if ($err) {
-            $message = $media.' cURL Error #:' . $err.'  url: '.$url.' response: '.$response;
+            $message = $media.' cURL Error #:' . $err.'  request headers: '.$headers.'  url: '.$url.' response: '.$response;
             $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
         } else {
             if ($httpcode != '200') {
-                $message =  $media.' Http code error #:' . $httpcode.'  url: '.$url.' response: '.$response;
+                $message =  $media.' Http code error #:' . $httpcode.'  request headers: '.$headers.'  url: '.$url.' response: '.$response;
                 $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
             }
             return $response;
@@ -150,6 +167,7 @@ class ImageFetcher extends DataLogger
         } elseif ($type == 'POPULAR') {
             // Newest popular
             //http://backend.deviantart.com/rss.xml?q=boost:popular max_age:24h sort:time
+            //http://backend.deviantart.com/rss.xml?&q=boost:popular max_age:24h -in:literature
             $CURLOPT_URL = $this->buildRSSURL(false, true, $tags, $keywords);
         } elseif ($type == 'ANY') {
             // Newest Any
