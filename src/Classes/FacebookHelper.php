@@ -214,7 +214,7 @@ class FacebookHelper extends DataLogger
             $post_id = $graphNode->getField('id');
             // if safe comment the author and original image
             if ($SAFETY == 'nonadult') {
-                $this->postCommentToReference($fb, $post_id, $POST_COMMENT, 'C:\xampp\htdocs\FacebookBot\src\resources\original-image.jpg');
+                $this->postCommentToReference($fb, $post_id, $POST_COMMENT, __DIR__.'/../resources/original-image.jpg');
             } else {
                 // unsafe, no pic
                 $POST_COMMENT = '[NSFW] '.$POST_COMMENT;

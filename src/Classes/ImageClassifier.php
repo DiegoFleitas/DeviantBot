@@ -187,9 +187,9 @@ class ImageClassifier
 
         $type = $this->classify($devimg);
         if ($type == 'bad') {
-            $PATH = 'C:/xampp/htdocs/FacebookBot/src/resources/reactions/negative/'. mt_rand(1, 47).'.jpg';
+            $PATH = __DIR__.'/../resources/reactions/negative/'. mt_rand(1, 47).'.jpg';
         } elseif ($type == 'nsfw') {
-            $PATH = 'C:/xampp/htdocs/FacebookBot/src/resources/reactions/tempted/'. mt_rand(1, 27).'.jpg';
+            $PATH = __DIR__.'/../resources/reactions/tempted/'. mt_rand(1, 27).'.jpg';
         }
 
         // if its worth to react
@@ -200,7 +200,7 @@ class ImageClassifier
             /** @var \Intervention\Image\Image $img */
             $img = Image::make($PATH);
 
-            $image_path = 'C:\xampp\htdocs\FacebookBot\tests\test\botcomment_photo.jpg';
+            $image_path = __DIR__.'/../../tests/test/botcomment_photo.jpg';
             $ImgTrans = new ImageTransformer();
             $ImgTrans->transformRandomly($img, $image_path, 'nonadult', 'reaction-reroll', 1);
 

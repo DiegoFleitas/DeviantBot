@@ -380,7 +380,7 @@ class ImageFetcher extends DataLogger
                     $this->logdata('['.__METHOD__.' ERROR] '.__FILE__.':'.__LINE__.' '.$message, 1);
                 }
 
-                $IMAGE_PATH_NEW = 'C:\xampp\htdocs\FacebookBot\src\resources\original-image.jpg';
+                $IMAGE_PATH_NEW = __DIR__.'/../resources/original-image.jpg';
 
                 $success = $ImgFetcher->saveImageLocally($true_url, $IMAGE_PATH_NEW);
                 if ($success) {
