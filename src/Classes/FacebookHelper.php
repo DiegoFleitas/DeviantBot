@@ -231,7 +231,7 @@ class FacebookHelper extends DataLogger
 
             // Move image to avoid posting it again
             // Formatted this way so files get sorted correctly
-            copy($IMAGE_PATH, 'debug/posted/'.date("Y-m-d H_i_s").'.jpg');
+            copy($IMAGE_PATH, __DIR__.'/../debug/posted/'.date("Y-m-d H_i_s").'.jpg');
             if (unlink($IMAGE_PATH)) {
                 $this->logdata('the file was copied and deleted.');
             } else {

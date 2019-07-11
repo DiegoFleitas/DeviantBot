@@ -77,7 +77,7 @@ try {
     $fb = $FB_helper->init($_APP_ID, $_APP_SECRET, $_ACCESS_TOKEN_DEBUG);
 
 
-    $IMAGE_PATH = 'resources/transformed_image.jpg';
+    $IMAGE_PATH = __DIR__.'/resources/transformed_image.jpg';
 
     $ImgFetcher = new DeviantBot\ImageFetcher();
     try {
