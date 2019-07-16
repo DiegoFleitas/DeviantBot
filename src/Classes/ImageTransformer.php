@@ -209,6 +209,7 @@ class ImageTransformer extends DataLogger
                 break;
 
             case 12:
+                // FIXME: Command (Limitcolors) is not available for driver (Imagick).
                 $method = 'limitcolors';
                 $aux = 5;
                 array_push($params, $aux);
@@ -258,7 +259,7 @@ class ImageTransformer extends DataLogger
 
                 $img->text($random_string, $posx, $posy, function ($font) {
                     /** @var \Intervention\Image\Imagick\Font $font */
-                    $font->file(__DIR__ . 'resources\fonts\lucida');
+                    $font->file(__DIR__ . '/../resources/fonts/lucida');
                     $font->size(mt_rand(24, 60));
                     // hacker green
                     $font->color($this->randomHexColor());
